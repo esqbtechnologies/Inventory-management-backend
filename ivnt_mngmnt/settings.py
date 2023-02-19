@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import datetime
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,14 +26,16 @@ SECRET_KEY = 'django-insecure-*rh393_=q@r6fj3d#_=8_n2=#di^su94k21cg_osxv=1cb#1t2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['142.93.210.217', 'localhost']
 
-
+# [label django_app/settings.py]
+# DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 # Application definition
 
 INSTALLED_APPS = [
     'tool',
     'rest_framework',
+    'rest_framework_jwt',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,17 +81,13 @@ WSGI_APPLICATION = 'ivnt_mngmnt.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'mydatabase',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'inventory_management',
+        'USER': 'inventoryuser',
+        'PASSWORD': '!nventory@123',
+        'HOST': 'localhost',
+        'PORT': ''
     }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'railway',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'mFbqmmH0dBmJNJzHqHru',
-    #     'HOST': 'containers-us-west-163.railway.app',
-    #     'PORT': '6265',
-    # }
 }
 
 
@@ -147,6 +146,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT  = os.path.join(BASE_DIR,'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
