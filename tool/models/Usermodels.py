@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager
 
 
-# Options of role fo user
+# Options of role of USER
 role_choice = (
     ('General_manager', 'General_manager'),
     ('Store_manager', 'Store_manager'),
@@ -44,6 +44,9 @@ class User(AbstractBaseUser):
     objects = MyUserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    def __getitem__(self, key):
+        return getattr(self, key)
 
     def has_perm(self, perm, obj=None):
         return True

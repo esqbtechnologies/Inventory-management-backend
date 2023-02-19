@@ -1,9 +1,11 @@
+from ..models.Usermodels import MyUserManager
 import json
 from django.core import serializers
+from django.http import HttpResponse
 from requests import request
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.shortcuts import render
-
+from ..serializers import DataSerializer
 
 from rest_framework.views import APIView
 from rest_framework_jwt.settings import api_settings
@@ -40,3 +42,26 @@ class DecodeToken(APIView):
             return Response({'error': 'Activations link expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as e:
             return Response({'error': 'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# function to register new user
+
+
+class register(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self, request):
+        email = request.data['email']
+        password = request.data['password']
+        role = "Worker"
+        if request.data['role'] == '1':
+            role = "General_manager"
+        if request.data['role'] == '2':
+            role = "Store_manager"
+        user = User()
+        user.email = email
+        user.set_password(password)
+        user.role = role
+        user.save()
+        return HttpResponse('User Created')
