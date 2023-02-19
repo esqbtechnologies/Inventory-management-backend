@@ -1,4 +1,3 @@
-from msilib.schema import ListView
 from os import stat
 from django.http import HttpResponse, JsonResponse
 from requests import Response
