@@ -153,5 +153,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# for cors error
-CORS_REPLACE_HTTPS_REFERER = True
+# # for cors error
+# CORS_REPLACE_HTTPS_REFERER = True
