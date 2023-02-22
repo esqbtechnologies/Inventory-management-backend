@@ -94,7 +94,7 @@ DATABASES = {
         'NAME': 'inventory_management',
         'USER': 'inventoryuser',
         'PASSWORD': '!nventory@123',
-        'HOST': 'localhost',
+        'HOST': '142.93.210.217',
         'PORT': ''
     }
 }

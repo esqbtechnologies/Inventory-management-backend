@@ -6,7 +6,8 @@ from requests import request
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.shortcuts import render
 from ..serializers import DataSerializer
-
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework_jwt.settings import api_settings
 import ivnt_mngmnt.settings as set
@@ -18,8 +19,30 @@ from rest_framework import status
 import jwt
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 
+# function to login user
+
+
+class obtain_token(APIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self, request):
+        email = request.data['email']
+        password = request.data['password']
+        if email is None or password is None:
+            return Response({'error': 'Please provide both username and password'}, status=status.HTTP_400
+                            )
+        user = authenticate(email=email, password=password)
+        if not user:
+            return Response({'error': 'Invalid Credentials'},
+                            status=status.HTTP_404_NOT_FOUND)
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key},
+                        status=status.HTTP_200_OK)
 
 # function to decode data from token
+
+
 class DecodeToken(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
