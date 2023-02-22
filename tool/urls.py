@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 urlpatterns = [
-    path('api/login/', csrf_exempt(Userviews.obtain_token.as_view()), name='login'),
+    path('api/login/', obtain_jwt_token, name='login'),
     path('api/login/verify/', verify_jwt_token, name='verify'),
     path('api/decode/', csrf_exempt(Userviews.DecodeToken.as_view()), name='decode'),
     path('api/register/', csrf_exempt(Userviews.register.as_view()),
