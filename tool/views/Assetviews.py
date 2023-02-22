@@ -34,7 +34,7 @@ class asset_get(APIView):
 
 # API To add data
 class asset_add(APIView):
-#     permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 #     authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request):
