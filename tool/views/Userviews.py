@@ -39,7 +39,7 @@ class obtain_token(APIView):
                      "password": password}
         token = jwt.encode(payload=json_data, key=set.SECRET_KEY,
                            algorithm="HS256")
-        return Response({'token': token.key},
+        return Response({'token': token},
                         status=status.HTTP_200_OK)
 
 # function to decode data from token
