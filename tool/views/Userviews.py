@@ -38,7 +38,7 @@ class obtain_token(APIView):
         json_data = {"email": email,
                      "password": password}
         token = jwt.encode(payload=json_data, key=set.SECRET_KEY,
-                           algorithm=['HS256'])
+                           algorithm="HS256")
         return Response({'token': token.key},
                         status=status.HTTP_200_OK)
 
