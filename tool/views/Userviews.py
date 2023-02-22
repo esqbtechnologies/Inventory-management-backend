@@ -35,7 +35,9 @@ class obtain_token(APIView):
         if not user:
             return Response({'error': 'Invalid Credentials'},
                             status=status.HTTP_404_NOT_FOUND)
-        token = jwt.encode(payload=user, key=set.SECRET_KEY,
+        json_data = {"email": email,
+                     "password": password}
+        token = jwt.encode(payload=json_data, key=set.SECRET_KEY,
                            algorithm=['HS256'])
         return Response({'token': token.key},
                         status=status.HTTP_200_OK)
