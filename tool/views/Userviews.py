@@ -46,7 +46,7 @@ class obtain_token(APIView):
 
 
 class DecodeToken(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def get(self, request):
