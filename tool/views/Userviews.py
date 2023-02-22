@@ -7,7 +7,6 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.shortcuts import render
 from ..serializers import DataSerializer
 from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework_jwt.settings import api_settings
 import ivnt_mngmnt.settings as set
@@ -36,7 +35,8 @@ class obtain_token(APIView):
         if not user:
             return Response({'error': 'Invalid Credentials'},
                             status=status.HTTP_404_NOT_FOUND)
-        token, _ = Token.objects.get_or_create(user=user)
+        token = jwt.encode(payload=user, key=set.SECRET_KEY,
+                           algorithm=['HS256'])
         return Response({'token': token.key},
                         status=status.HTTP_200_OK)
 
