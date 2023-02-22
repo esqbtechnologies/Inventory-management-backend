@@ -51,6 +51,8 @@ class DecodeToken(APIView):
 
     def get(self, request):
         token = request.data['token']
+        print("token")
+        print(token)
         try:
             payload = jwt.decode(
                 jwt=token, key=set.SECRET_KEY, algorithms=['HS256'])
