@@ -46,13 +46,11 @@ class obtain_token(APIView):
 
 
 class DecodeToken(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def get(self, request):
         token = request.data['token']
-        print("token")
-        print(token)
         try:
             payload = jwt.decode(
                 jwt=token, key=set.SECRET_KEY, algorithms=['HS256'])
@@ -75,7 +73,7 @@ class DecodeToken(APIView):
 
 
 class register(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request):
