@@ -1,6 +1,5 @@
 from multiprocessing import AuthenticationError
 from django.http import HttpResponse, JsonResponse
-from yaml import serialize
 from ..models.Verificationmodels import verification as Verification
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
