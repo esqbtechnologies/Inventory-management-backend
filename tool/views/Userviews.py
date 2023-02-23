@@ -49,7 +49,7 @@ class DecodeToken(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get(self, request):
+    def post(self, request):
         token = request.data['token']
         try:
             payload = jwt.decode(
