@@ -115,4 +115,17 @@ class tagQr(APIView):
             return JsonResponse({'error': 'Data not saved'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# API for
+# API for getting all Asset
+
+class get_all_asset(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self, request):
+        asset_data = Asset.objects.all()
+        data = serializers.serialize('json', [asset_data,])
+        struct = json.loads(data)
+        data = json.dumps(struct[0])
+        print(data)
+        return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
