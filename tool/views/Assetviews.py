@@ -124,8 +124,10 @@ class get_all_asset(APIView):
 
     def get(self, request):
         asset_data = Asset.objects.all()
-        data = serializers.serialize('json', [asset_data,])
-        struct = json.loads(data)
-        data = json.dumps(struct[0])
-        print(data)
-        return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
+        response_data = []
+        for asset in asset_data:
+            data = serializers.serialize('json', [asset,])
+            struct = json.loads(data)
+            data = json.dumps(struct[0])
+            response_data.append(data)
+        return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
