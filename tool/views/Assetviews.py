@@ -52,7 +52,11 @@ class asset_add(APIView):
                 new_asset.Remain_life = asset['Remain_life']
                 new_asset.Warehouse_location = asset['Warehouse_location']
                 new_asset.save()
-        return HttpResponse('Data Saved')
+                 data = serializers.serialize('json', [new_asset,])
+                struct = json.loads(data)
+                data = json.dumps(struct[0])
+                added_sucesfully.append(data)
+        return JsonResponse(added_sucesfully, safe=False, status=status.HTTP_200_OK)
 
 # API to retrive all verifications for asset
 
