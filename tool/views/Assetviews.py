@@ -35,10 +35,11 @@ class asset_get(APIView):
 # API To add data
 class asset_add(APIView):
     permission_classes = (AllowAny,)
-#     authentication_classes = (JSONWebTokenAuthentication,)
+    authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request):
         arrOfassets = request.data
+        added_sucesfully = []
         for asset in arrOfassets:
             if Asset.objects.filter(item_code=asset['item_code']).exists():
                 continue
@@ -52,7 +53,11 @@ class asset_add(APIView):
                 new_asset.Remain_life = asset['Remain_life']
                 new_asset.Warehouse_location = asset['Warehouse_location']
                 new_asset.save()
-        return HttpResponse('Data Saved')
+                data = serializers.serialize('json', [new_asset,])
+                struct = json.loads(data)
+                data = json.dumps(struct[0])
+                added_sucesfully.append(data)
+        return JsonResponse(added_sucesfully, safe=False, status=status.HTTP_200_OK)
 
 # API to retrive all verifications for asset
 
@@ -124,8 +129,10 @@ class get_all_asset(APIView):
 
     def get(self, request):
         asset_data = Asset.objects.all()
-        data = serializers.serialize('json', [asset_data,])
-        struct = json.loads(data)
-        data = json.dumps(struct[0])
-        print(data)
-        return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
+        response_data = []
+        for asset in asset_data:
+            data = serializers.serialize('json', [asset,])
+            struct = json.loads(data)
+            data = json.dumps(struct[0])
+            response_data.append(data)
+        return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
