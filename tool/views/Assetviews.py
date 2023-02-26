@@ -95,12 +95,13 @@ class fullTextSearch(APIView):
         search_query = SearchQuery(query)
         res = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
-        print(res)
-        data = serializers.serialize('json', [res,])
-        struct = json.loads(data)
-        data = json.dumps(struct[0])
-
-        return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
+        outpt = []
+        for resul in res:
+            data = serializers.serialize('json', [resul,])
+            struct = json.loads(data)
+            data = json.dumps(struct[0])
+            outpt.append(data)
+        return JsonResponse(outpt, safe=False, status=status.HTTP_200_OK)
 
 
 # API for Tagging
