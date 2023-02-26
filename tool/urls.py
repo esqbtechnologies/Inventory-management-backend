@@ -6,7 +6,7 @@ from .views import Assetviews
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 from django.views.decorators.csrf import csrf_exempt
 from .views import Verificationviews
-
+from .views import Sessionviews
 urlpatterns = [
     # End point to login (Type : POST,Header: Empty, Data: email,password)
     path('api/login/', obtain_jwt_token, name='login'),
@@ -40,4 +40,11 @@ urlpatterns = [
     # End point to get complete asset table(Type:Get,Header:Authorization,Data:Empty)
     path('api/get_all_asset',
          csrf_exempt(Assetviews.get_all_asset.as_view()), name='get_asset'),
+    path('api/createsession',
+         csrf_exempt(Sessionviews.create_session.as_view()), name='create_session'),
+    path('api/endsession',
+         csrf_exempt(Sessionviews.end_session.as_view()), name='endSession'),
+    path('api/getsession',
+         csrf_exempt(Sessionviews.get_active_session.as_view()), name='get_session'),
+
 ]

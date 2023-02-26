@@ -34,11 +34,13 @@ class asset_get(APIView):
 
 # API To add data
 class asset_add(APIView):
+
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request):
         arrOfassets = request.data
+        added_sucesfully = []
         for asset in arrOfassets:
             if Asset.objects.filter(item_code=asset['item_code']).exists():
                 continue
@@ -52,7 +54,7 @@ class asset_add(APIView):
                 new_asset.Remain_life = asset['Remain_life']
                 new_asset.Warehouse_location = asset['Warehouse_location']
                 new_asset.save()
-                 data = serializers.serialize('json', [new_asset,])
+                data = serializers.serialize('json', [new_asset,])
                 struct = json.loads(data)
                 data = json.dumps(struct[0])
                 added_sucesfully.append(data)

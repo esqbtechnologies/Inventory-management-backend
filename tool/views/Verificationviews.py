@@ -19,11 +19,21 @@ class create_verification(APIView):
     def post(self, request):
         verification = Verification()
         verification.geo_location = request.data['geo_location']
+        verification.sessionId = request.data['sessionId']
         verification.date_time = request.data['date_time']
         verification.worker_id = request.data['worker_id']
         verification.asset = request.data['item_id']
         verification.save()
-        return HttpResponse('verification done')
+        verificationByUser = Verification.objects.get(
+            sessionId=request.data['sessionId'], worker_id=request.data['worker_id'])
+        verifications = []
+        for data in verificationByUser:
+            data = serializers.serialize('json', [data,])
+            struct = json.loads(data)
+            data = json.dumps(struct[0])
+            verifications.append(data)
+        return JsonResponse(verifications, safe=False, status=status.HTTP_200_OK)
+
 
 # API To get verification details from QR IDs
 
