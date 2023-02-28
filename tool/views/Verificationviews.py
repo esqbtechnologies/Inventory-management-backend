@@ -20,11 +20,15 @@ class create_verification(APIView):
         verification = Verification()
         verification.geo_location = request.data['geo_location']
         verification.sessionId = request.data['sessionId']
-        verification.date_time = request.data['date_time']
-        verification.worker_id = request.data['worker_id']
-        verification.asset = request.data['item_id']
+        verification.date = request.data['date']
+        worker = User.objects.get(id=request.data['worker_id'])
+        verification.worker_id = worker
+        qr = request.data['Qr_id']
+        assetdata = Asset.objects.get(Qr_id=qr)
+        print(assetdata)
+        verification.asset = assetdata
         verification.save()
-        verificationByUser = Verification.objects.get(
+        verificationByUser = Verification.objects.filter(
             sessionId=request.data['sessionId'], worker_id=request.data['worker_id'])
         verifications = []
         for data in verificationByUser:
