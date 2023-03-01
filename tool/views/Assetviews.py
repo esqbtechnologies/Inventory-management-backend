@@ -88,13 +88,14 @@ class fullTextSearch(APIView):
     authentication_classes = (JSONWebTokenAuthentication,)
     model = Asset
 
-    def get(self, request):
-        query = self.request.GET.get("q")
+    def post(self, request):
+        query = request.data['q']
         search_vector = SearchVector("item_code", "item_name", "asset_cls",
                                      "periodcat", "Useful_life", "Remain_life", "Warehouse_location", "Qr_id")
         search_query = SearchQuery(query)
         res = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
+        print(res)
         outpt = []
         for resul in res:
             data = serializers.serialize('json', [resul,])
