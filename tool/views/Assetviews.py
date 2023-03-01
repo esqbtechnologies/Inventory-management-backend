@@ -113,15 +113,17 @@ class tagQr(APIView):
     def post(self, request):
         asset_id = request.data['item_code']
         qr_id = request.data['Qr_id']
-        try:
-            if Asset.objects.get(Qr_id=qr_id).exists():
-                return JsonResponse({'Response': 'The Qr is already tagged to an asset'}, status=status.HTTP_406_NOT_ACCEPTABLE)
-            asset = Asset.objects.get(item_code=asset_id)
-            asset.Qr_id = qr_id
-            asset.save()
-            return JsonResponse({'Response': 'Qr Tagged'}, status=status.HTTP_201_CREATED)
-        except:
-            return JsonResponse({'error': 'Data not saved'}, status=status.HTTP_400_BAD_REQUEST)
+        if Asset.objects.filter(Qr_id=qr_id).exists():
+            return JsonResponse({'Response': 'The Qr is already tagged to an asset'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            if Asset.objects.filter(item_code=asset_id).exists():
+                print("found")
+                asset = Asset.objects.get(item_code=asset_id)
+                asset.Qr_id = qr_id
+                asset.save()
+                return JsonResponse({'Response': 'Qr Tagged'}, status=status.HTTP_201_CREATED)
+            else:
+                return JsonResponse({'error': 'Data not saved'}, status=status.HTTP_400_BAD_REQUEST)
         
         
 # API for getting all Asset
