@@ -83,13 +83,14 @@ class verification_details(APIView):
 # API for full text search
 
 
-class fullTextSearch(APIView):
+class fullTextSearch(ListAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
     model = Asset
 
-    def post(self, request):
-        query = request.data['q']
+    def get_queryset(self):
+        query = self.request.query_params.get("q")
+        print(query)
         search_vector = SearchVector("item_code", "item_name", "asset_cls",
                                      "periodcat", "Useful_life", "Remain_life", "Warehouse_location", "Qr_id")
         search_query = SearchQuery(query)
