@@ -87,7 +87,7 @@ class verification_details(APIView):
 class fullTextSearch(ListAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
-    serializer_class = Assetserializer
+#     serializer_class = Assetserializer
     model = Asset
     
     def get_queryset(self):
