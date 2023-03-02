@@ -6,6 +6,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from ..models.Assetmodels import asset as Asset
+from ..serializers import Assetserializer
 import json
 from django.core import serializers
 from rest_framework import status
