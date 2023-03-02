@@ -99,13 +99,12 @@ class fullTextSearch(ListAPIView):
         queryset = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
         print(queryset)
-        serialized_data = self.serializer_class(queryset, many=True).data
-#         outpt = []
-#         for resul in res:
-#             data = serializers.serialize('json', [resul,])
-#             struct = json.loads(data)
-#             data = json.dumps(struct[0])
-#             outpt.append(data)
+        serialized_data = []
+        for resul in query_set:
+            data = serializers.serialize('json', [resul,])
+            struct = json.loads(data)
+            data = json.dumps(struct[0])
+            serialized_data.append(data)
         return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
 
 
