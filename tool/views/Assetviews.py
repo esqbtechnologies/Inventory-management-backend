@@ -82,15 +82,11 @@ class verification_details(APIView):
 
 # API for full text search
 
-class MySerializer():
-    def to_representation(self, instance):
-        return serializers.serialize('json', [instance])
-    
-    
+
 class fullTextSearch(ListAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
-    serializer_class = MySerializer
+    serializer_class = Assetserializer
     model = Asset
     
     def get_queryset(self):
@@ -102,7 +98,7 @@ class fullTextSearch(ListAPIView):
         queryset = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
         print(queryset)
-        serialized_data = self.serializer_class(queryset, many=True).data
+        serialized_data = self.serializer_class(queryset, many=True)
 #         outpt = []
 #         for resul in res:
 #             data = serializers.serialize('json', [resul,])
