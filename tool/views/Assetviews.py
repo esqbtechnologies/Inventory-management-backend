@@ -83,7 +83,7 @@ class verification_details(APIView):
 # API for full text search
 
 
-class fullTextSearch(ListAPIView):
+class fullTextSearch(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
     serializer_class = serializers
