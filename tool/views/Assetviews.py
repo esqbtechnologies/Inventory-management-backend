@@ -82,7 +82,7 @@ class verification_details(APIView):
 
 # API for full text search
 
-class MySerializer:
+class MySerializer():
     def to_representation(self, instance):
         return serializers.serialize('json', [instance])
     
