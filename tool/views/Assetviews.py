@@ -86,7 +86,7 @@ class verification_details(APIView):
 class fullTextSearch(ListAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
-    serializer_class = None
+#     serializer_class = None
     model = Asset
 
     def get_queryset(self):
@@ -98,14 +98,14 @@ class fullTextSearch(ListAPIView):
         res = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
         print(res)
-        outpt = serializers.serialize('json',res)
+        serialized_data = serializers.serialize('json',res)
 #         outpt = []
 #         for resul in res:
 #             data = serializers.serialize('json', [resul,])
 #             struct = json.loads(data)
 #             data = json.dumps(struct[0])
 #             outpt.append(data)
-        return JsonResponse(outpt, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
 
 
 # API for Tagging
