@@ -89,7 +89,7 @@ class fullTextSearch(ListAPIView):
     model = Asset
     
     def to_representation(self, instance):
-        return serialize('json', [instance])
+        return serializers.serialize('json', [instance])
     
     def get_queryset(self):
         query = self.request.query_params.get("q")
