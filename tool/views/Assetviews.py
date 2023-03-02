@@ -82,14 +82,16 @@ class verification_details(APIView):
 
 # API for full text search
 
-
+class MySerializer:
+    def to_representation(self, instance):
+        return serializers.serialize('json', [instance])
+    
+    
 class fullTextSearch(ListAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
+    serializer_class = MySerializer
     model = Asset
-    
-    def to_representation(self, instance):
-        return serializers.serialize('json', [instance])
     
     def get_queryset(self):
         query = self.request.query_params.get("q")
