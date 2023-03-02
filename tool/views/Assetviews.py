@@ -99,7 +99,7 @@ class fullTextSearch(ListAPIView):
         search_query = SearchQuery(query)
         queryset = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
-        print(res)
+        print(queryset)
         serialized_data = self.serializer_class(queryset, many=True).data
 #         outpt = []
 #         for resul in res:
