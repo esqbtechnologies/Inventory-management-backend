@@ -10,5 +10,12 @@ class DataSerializer(serializers.ModelSerializer):
 class Assetserializer(serializers.ModelSerializer):
     class Meta:
         model = asset
-        fields = '__all__'
-    
+        fields = [ 'item_code',
+                 'item_name',
+                 'asset_cls',
+                 'periodcat',
+                 'Useful_life',
+                 'Remain_life',
+                 'Warehouse_location',
+                 'Qr_id',]
+              
