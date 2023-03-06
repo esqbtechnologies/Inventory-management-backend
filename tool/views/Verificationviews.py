@@ -17,7 +17,7 @@ class create_verification(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
- def post(self, request):
+    def post(self, request):
         verification = Verification()
         verification.geo_location = request.data['geo_location']
         verification.sessionId = request.data['sessionId']
