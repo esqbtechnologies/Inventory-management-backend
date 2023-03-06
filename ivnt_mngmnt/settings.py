@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-*rh393_=q@r6fj3d#_=8_n2=#di^su94k21cg_osxv=1cb#1t2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['142.93.210.217', 'localhost', '127.0.0.1','inventoryapi.esqbtechnologies.com']
+ALLOWED_HOSTS = ['142.93.210.217','inventoryapi.esqbtechnologies.com', 'localhost', '127.0.0.1']
 
 # CORS_ORIGIN_ALLOW_ALL = True
 
