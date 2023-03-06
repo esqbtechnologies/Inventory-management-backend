@@ -46,5 +46,8 @@ urlpatterns = [
          csrf_exempt(Sessionviews.end_session.as_view()), name='endSession'),
     path('api/getsession',
          csrf_exempt(Sessionviews.get_active_session.as_view()), name='get_session'),
-
+    path('api/restart_session',
+         csrf_exempt(Sessionviews.restart_last_session.as_view()), name='restart_session'),
+    path('api/changepassword',
+         csrf_exempt(Userviews.change_password.as_view()), name='passchng')
 ]
