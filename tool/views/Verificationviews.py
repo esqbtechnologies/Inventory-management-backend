@@ -17,7 +17,7 @@ class create_verification(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def post(self, request):
+ def post(self, request):
         verification = Verification()
         verification.geo_location = request.data['geo_location']
         verification.sessionId = request.data['sessionId']
@@ -33,10 +33,16 @@ class create_verification(APIView):
             sessionId=request.data['sessionId'], worker_id=request.data['worker_id'])
         verifications = []
         for data in verificationByUser:
+            code = data.asset.item_code
+            name = data.asset.item_name
             data = serializers.serialize('json', [data,])
             struct = json.loads(data)
             data = json.dumps(struct[0])
+            data = json.loads(data)
+            data['fields']['item_code'] = code
+            data['fields']['item_name'] = name
             verifications.append(data)
+
         return JsonResponse(verifications, safe=False, status=status.HTTP_200_OK)
 
 
