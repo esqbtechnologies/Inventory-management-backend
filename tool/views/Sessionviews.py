@@ -8,6 +8,7 @@ import ivnt_mngmnt.settings as set
 from ..models.Usermodels import User
 from ..models.Sessionmodels import session
 from datetime import date
+from datetime import datetime
 import uuid
 from rest_framework import status
 import json
@@ -52,7 +53,7 @@ class end_session(APIView):
             id = request.data['sessionId']
             try:
                 delsession = session.objects.get(sessionId=id)
-                delsession.sessionEndDate = date.today()
+                delsession.sessionEndDate = datetime.now()
                 delsession.isActive = False
                 delsession.save()
                 return JsonResponse({'Result': 'session deleted Succesfully'}, status=status.HTTP_200_OK)
