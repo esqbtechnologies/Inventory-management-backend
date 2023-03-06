@@ -90,3 +90,26 @@ class register(APIView):
         user.role = role
         user.save()
         return HttpResponse('User Created')
+    
+# API to change password
+    
+class change_password(APIView):
+
+    permission_classes = (AllowAny,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self, request):
+        email = request.data['email']
+        password = request.data['password']
+        newpassword = request.data['new_password']
+        if email is None or password is None or newpassword is None:
+            return Response({'error': 'Please provide username,password and newpassword'}, status=status.HTTP_400
+                            )
+        user = authenticate(email=email, password=password)
+        if not user:
+            return Response({'error': 'Invalid Credentials'},
+                            status=status.HTTP_404_NOT_FOUND)
+        auth = User.objects.get(email=email)
+        auth.set_password(newpassword)
+        auth.save()
+        return Response({'result': 'passwowrd changed succesfully'}, status=status.HTTP_200_OK)
