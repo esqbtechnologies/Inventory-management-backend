@@ -47,12 +47,12 @@ class asset_add(APIView):
                 continue
             else:
                 new_asset = Asset()
-                new_asset.item_code = asset['item_code']
-                new_asset.item_name = asset['item_name']
-                new_asset.asset_cls = asset['asset_cls']
-                new_asset.periodcat = asset['periodcat']
-                new_asset.Useful_life = asset['Useful_life']
-                new_asset.Remain_life = asset['Remain_life']
+                new_asset.item_code = asset['ItemCode']
+                new_asset.item_name = asset['ItemName']
+                new_asset.asset_cls = asset['AssetClass']
+                new_asset.periodcat = asset['PeriodCat']
+                new_asset.Useful_life = asset['UsefulLife']
+                new_asset.Remain_life = asset['RemainLife']
                 new_asset.Warehouse_location = asset['Warehouse_location']
                 new_asset.save()
                 data = serializers.serialize('json', [new_asset,])
