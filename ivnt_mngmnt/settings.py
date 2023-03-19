@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-*rh393_=q@r6fj3d#_=8_n2=#di^su94k21cg_osxv=1cb#1t2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['142.93.210.217','inventoryapi.esqbtechnologies.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['142.93.210.217',
+                 'inventoryapi.esqbtechnologies.com', 'localhost', '127.0.0.1']
 
 # CORS_ORIGIN_ALLOW_ALL = True
 
@@ -170,3 +171,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # # for cors error
 # CORS_REPLACE_HTTPS_REFERER = True
+
+# Email setup settings
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'dummy007gupta@gmail.com'
+EMAIL_HOST_PASSWORD = 'hkjumitrwroqrihr'

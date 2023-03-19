@@ -1,3 +1,5 @@
+from asyncio.windows_events import NULL
+from distutils.command.sdist import sdist
 from django.http import JsonResponse
 from requests import Response
 from rest_framework.views import APIView
@@ -76,8 +78,10 @@ class get_active_session(APIView):
             return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
         except:
             return JsonResponse({'Result': 'No Active Session exists'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-        
+
 # API To restart latest session
+
+
 class restart_last_session(APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -107,4 +111,30 @@ class restart_last_session(APIView):
                 except:
                     return JsonResponse({'Result': 'No Session exists to Restart'}, status=status.HTTP_204_NO_CONTENT)
 
-        return JsonResponse({'error': 'user is not authorized to Restart session'}, status=status.HTTP_400_BAD_REQUEST)        
+        return JsonResponse({'error': 'user is not authorized to Restart session'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class get_all_session(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self, request):
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        if user.role == 'General_manager':
+            try:
+                all_session = session.objects.all()
+                response_data = []
+                for sessions in all_session:
+                    data = serializers.serialize('json', [sessions,])
+                    struct = json.loads(data)
+                    data = json.dumps(struct[0])
+                    response_data.append(data)
+                return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+            except:
+                return JsonResponse({'error': 'No sessions exists to show'}, status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({'error': 'user is not authorized to get all Session'}, status=status.HTTP_400_BAD_REQUEST)

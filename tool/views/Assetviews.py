@@ -1,3 +1,4 @@
+from genericpath import exists
 from os import stat
 from django.http import HttpResponse, JsonResponse
 from requests import Response
@@ -89,7 +90,7 @@ class fullTextSearch(ListAPIView):
     authentication_classes = (JSONWebTokenAuthentication,)
     serializer_class = serializers.serialize
     model = Asset
-    
+
     def get_queryset(self):
         query = self.request.query_params.get("q")
         print(query)
@@ -128,8 +129,8 @@ class tagQr(APIView):
                 return JsonResponse({'Response': 'Qr Tagged'}, status=status.HTTP_201_CREATED)
             else:
                 return JsonResponse({'error': 'Data not saved'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
+
+
 # API for getting all Asset
 
 class get_all_asset(APIView):

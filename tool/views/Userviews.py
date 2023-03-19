@@ -1,9 +1,13 @@
+from operator import truediv
+import re
+from tkinter import E
 from ..models.Usermodels import MyUserManager
 import json
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from requests import request
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_jwt.views import ObtainJSONWebToken
 from django.shortcuts import render
 from ..serializers import DataSerializer
 from django.contrib.auth import authenticate
@@ -14,6 +18,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from ..models.Usermodels import User
+from ..models.Otpmodels import otp as OTP
 from rest_framework import status
 import jwt
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -38,7 +43,7 @@ class obtain_token(APIView):
         json_data = {"email": email,
                      "password": password}
         token = jwt.encode(payload=json_data, key=set.SECRET_KEY,
-                           algorithm="HS256")
+                           algorithm='HS256')
         return Response({'token': token},
                         status=status.HTTP_200_OK)
 
@@ -90,26 +95,44 @@ class register(APIView):
         user.role = role
         user.save()
         return HttpResponse('User Created')
-    
-# API to change password
-    
-class change_password(APIView):
 
+
+class obtainToken(ObtainJSONWebToken):
     permission_classes = (AllowAny,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request):
         email = request.data['email']
         password = request.data['password']
-        newpassword = request.data['new_password']
-        if email is None or password is None or newpassword is None:
-            return Response({'error': 'Please provide username,password and newpassword'}, status=status.HTTP_400
-                            )
-        user = authenticate(email=email, password=password)
-        if not user:
-            return Response({'error': 'Invalid Credentials'},
-                            status=status.HTTP_404_NOT_FOUND)
-        auth = User.objects.get(email=email)
-        auth.set_password(newpassword)
-        auth.save()
-        return Response({'result': 'passwowrd changed succesfully'}, status=status.HTTP_200_OK)
+        otp = request.data['otp']
+        try:
+            user = authenticate(email=email, password=password)
+            tdata = OTP.objects.get(user_id=user.pk)
+            if not user or tdata.num != otp or tdata.flag == True:
+                return JsonResponse({'Response': 'otp did not matched'})
+            tdata.flag = True
+            res = super().post(request)
+            return res
+        except:
+            return JsonResponse({'Response': 'No data found'})
+
+
+class change_password(APIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self, request):
+        email = request.data['email']
+        Newpassword = request.data['Newpassword']
+        otp = request.data['otp']
+        try:
+            user = User.objects.get(email=email)
+            tdata = OTP.objects.get(user_id=user.pk)
+            if not user or tdata.num != otp or tdata.flag == True or Newpassword is None:
+                return JsonResponse({'Response': 'otp did not matched'})
+            tdata.flag = True
+            user.set_password(Newpassword)
+            user.save()
+            return JsonResponse({'Response': 'Password changed succesfully'})
+        except:
+            return JsonResponse({'Response': 'No data found'})

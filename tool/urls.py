@@ -7,9 +7,10 @@ from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh
 from django.views.decorators.csrf import csrf_exempt
 from .views import Verificationviews
 from .views import Sessionviews
+from .views import Otpviews
 urlpatterns = [
     # End point to login (Type : POST,Header: Empty, Data: email,password)
-    path('api/login/', obtain_jwt_token, name='login'),
+    path('api/login/', csrf_exempt(Userviews.obtainToken.as_view()), name='login'),
     path('api/login/verify/', verify_jwt_token, name='verify'),
     # End point to Decode Token(Type : Get,Header: Authorization, Data: token)
     path('api/decode/', csrf_exempt(Userviews.DecodeToken.as_view()), name='decode'),
@@ -49,5 +50,10 @@ urlpatterns = [
     path('api/restart_session',
          csrf_exempt(Sessionviews.restart_last_session.as_view()), name='restart_session'),
     path('api/changepassword',
-         csrf_exempt(Userviews.change_password.as_view()), name='passchng')
+         csrf_exempt(Userviews.change_password.as_view()), name='passchng'),
+    path('api/requestOtp', csrf_exempt(Otpviews.otpRequest.as_view()), name='getOtp'),
+    path('api/getallsession/',
+         csrf_exempt(Sessionviews.get_all_session.as_view()), name='getallsession'),
+    path('api/sessiondata/',
+         csrf_exempt(Verificationviews.session_data.as_view()), name='assetsinsession')
 ]
