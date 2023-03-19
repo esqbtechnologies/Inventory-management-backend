@@ -1,6 +1,3 @@
-from operator import truediv
-import re
-from tkinter import E
 from ..models.Usermodels import MyUserManager
 import json
 from django.core import serializers
