@@ -147,3 +147,24 @@ class get_all_asset(APIView):
             data = json.dumps(struct[0])
             response_data.append(data)
         return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+
+# API to delete asset
+
+class delete_asset(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self,request):
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        if user.role == 'General_manager':
+            code = request.data['item_code']
+            ass = Asset.objects.get(item_code = code)
+            ass.is_deleted = True
+            ass.save()
+            return JsonResponse({'Response':'Asset Deleted Sucesfully'},status = status.HTTP_200_OK)
+        return JsonResponse({'error': 'user is not authorized to delete asset'},status = status.HTTP_400_BAD_REQUEST)

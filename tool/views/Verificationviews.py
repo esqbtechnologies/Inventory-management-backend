@@ -11,6 +11,7 @@ from ..models.Usermodels import User
 from django.core import serializers
 import jwt
 import json
+from datetime import date
 from rest_framework import status
 # API to Create Verirfication
 
@@ -21,32 +22,44 @@ class create_verification(APIView):
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request):
-        verification = Verification()
-        verification.geo_location = request.data['geo_location']
-        verification.sessionId = request.data['sessionId']
-        verification.date = request.data['date']
-        worker = User.objects.get(id=request.data['worker_id'])
-        verification.worker_id = worker
+        
         qr = request.data['Qr_id']
         assetdata = Asset.objects.get(Qr_id=qr)
-        print(assetdata)
-        verification.asset = assetdata
-        verification.save()
-        verificationByUser = Verification.objects.filter(
-            sessionId=request.data['sessionId'], worker_id=request.data['worker_id'])
-        verifications = []
-        for data in verificationByUser:
-            code = data.asset.item_code
-            name = data.asset.item_name
-            data = serializers.serialize('json', [data,])
-            struct = json.loads(data)
-            data = json.dumps(struct[0])
-            data = json.loads(data)
-            data['fields']['item_code'] = code
-            data['fields']['item_name'] = name
-            verifications.append(data)
+        if Verification.objects.filter(sessionId = request.data['sessionId']).filter(asset = assetdata).filter(flag = True).exists():
+            return JsonResponse({'error':'The assset had been already verified in the current session'},status=status.HTTP_400_BAD_REQUEST)
+        else:        
+            verification, created = Verification.objects.get_or_create(
+                sessionId = request.data['sessionId'],
+                asset = assetdata,
+                flag = False,
+                defaults = {'date':date.today()}
+            )
+            print(verification.geo_location)
+            verification.geo_location = request.data['geo_location']
+            verification.sessionId = request.data['sessionId']
+            verification.date = request.data['date']
+            worker = User.objects.get(id=request.data['worker_id'])
+            verification.worker_id = worker
+            verification.flag = True            
+            verification.asset = assetdata
+            verification.save()
+            verificationByUser = Verification.objects.filter(
+                sessionId=request.data['sessionId'], worker_id=request.data['worker_id'])
+            verifications = []
+            for data in verificationByUser:
+                code = data.asset.item_code
+                name = data.asset.item_name
+                data = serializers.serialize('json', [data,])
+                struct = json.loads(data)
+                data = json.dumps(struct[0])
+                data = json.loads(data)
+                data['fields']['item_code'] = code
+                data['fields']['item_name'] = name
+                verifications.append(data)
 
-        return JsonResponse(verifications, safe=False, status=status.HTTP_200_OK)
+            return JsonResponse(verifications, safe=False, status=status.HTTP_200_OK)
+
+
 
 
 # API To get verification details from QR IDs
@@ -85,10 +98,44 @@ class session_data(APIView):
             response_data = []
             sdata = Verification.objects.filter(sessionId=session_id)
             for sdatas in sdata:
-                assets = Asset.objects.get(item_code=sdatas.asset)
-                data = serializers.serialize('json', [assets,])
+                code = sdatas.asset.item_code
+                name = sdatas.asset.item_name
+                data = serializers.serialize('json', [sdatas,])
                 struct = json.loads(data)
                 data = json.dumps(struct[0])
+                data = json.loads(data)
+                data['fields']['item_code'] = code
+                data['fields']['item_name'] = name
                 response_data.append(data)
             return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse({'error': 'user is not authorized to get Data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class add_comment(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self,request):
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        if user.role == 'General_manager':
+            asset = request.data['item_code']
+            id = request.data['sessionId']
+            comme = request.data['comment']
+            if verification.objects.filter(sessionId = id).filter(asset = asset).filter(flag = True).exists():
+                return JsonResponse({'error':'This is a verified asset. Cant add comment'},status = status.HTTP_400_BAD_REQUEST)
+            else:
+                ver = verification.objects.get(sessionId=id,asset = asset,flag = False)
+                ver.sessionId = id
+                ver.date = date.today()
+                ver.comment = comme
+                assetdata = Asset.objects.get(item_code=asset)
+                ver.asset = assetdata
+                ver.flag = False    
+                ver.save()
+                return JsonResponse({'Respone':'Comment Added Succesfully'},status = status.HTTP_200_OK)
         return JsonResponse({'error': 'user is not authorized to get Data'}, status=status.HTTP_400_BAD_REQUEST)

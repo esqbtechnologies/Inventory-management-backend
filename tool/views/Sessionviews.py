@@ -13,7 +13,8 @@ import uuid
 from rest_framework import status
 import json
 from django.core import serializers
-
+from ..models.Verificationmodels import verification
+from ..models.Assetmodels import asset
 
 class create_session(APIView):
     permission_classes = (IsAuthenticated,)
@@ -36,27 +37,50 @@ class create_session(APIView):
             struct = json.loads(data)
             data = json.dumps(struct[0])
             return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
-        return Response({'error': 'user is not authorized to start session'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'error': 'user is not authorized to start session'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class end_session(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def post(self, request):
+    def get(self, request):
         token = request.headers['Authorization']
         token = token[4:]
         payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
                              algorithms=['HS256'])
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
-            id = request.data['sessionId']
+            id = request.headers['sessionId']
             try:
-                delsession = session.objects.get(sessionId=id)
+                delsession = session.objects.get(sessionId=id,isActive=True)
                 delsession.sessionEndDate = datetime.now()
                 delsession.isActive = False
-                delsession.save()
-                return JsonResponse({'Result': 'session deleted Succesfully'}, status=status.HTTP_200_OK)
+                all_assets = asset.objects.filter(is_deleted = False)
+                unvarified_asset = []
+                for datas in all_assets:
+                    if verification.objects.filter(sessionId=id).filter(asset=datas).exists():
+                        if verification.objects.filter(sessionId=id).filter(asset=datas).filter(flag=True).exists():
+                            continue
+                        else:
+                            data = serializers.serialize('json', [datas,])
+                            struct = json.loads(data)
+                            data = json.dumps(struct[0])
+                            unvarified_asset.append(data)
+                    else:
+                        print(datas)
+                        dummyver = verification()
+                        dummyver.date = date.today()
+                        dummyver.sessionId = id
+                        dummyver.asset = datas
+                        dummyver.flag = False
+                        dummyver.save()
+                        data = serializers.serialize('json', [datas,])
+                        struct = json.loads(data)
+                        data = json.dumps(struct[0])
+                        unvarified_asset.append(data)    
+                delsession.save()        
+                return JsonResponse(unvarified_asset, safe = False,status=status.HTTP_200_OK)
             except:
                 return JsonResponse({'error': 'No such session exists'}, status=status.HTTP_400_BAD_REQUEST)
 
