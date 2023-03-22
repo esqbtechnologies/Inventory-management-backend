@@ -55,5 +55,7 @@ urlpatterns = [
     path('api/getallsession/',
          csrf_exempt(Sessionviews.get_all_session.as_view()), name='getallsession'),
     path('api/sessiondata/',
-         csrf_exempt(Verificationviews.session_data.as_view()), name='assetsinsession')
+         csrf_exempt(Verificationviews.session_data.as_view()), name='assetsinsession'),
+    path('api/addComment/',csrf_exempt(Verificationviews.add_comment.as_view()),name ='addComment'),
+    path('api/del/',csrf_exempt(Assetviews.delete_asset.as_view()),name = 'deleteAsset')
 ]
