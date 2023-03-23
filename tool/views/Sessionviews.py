@@ -44,14 +44,14 @@ class end_session(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get(self, request):
+    def post(self, request):
         token = request.headers['Authorization']
         token = token[4:]
         payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
                              algorithms=['HS256'])
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
-            id = request.headers['sessionId']
+            id = request.data['sessionId']
             try:
                 delsession = session.objects.get(sessionId=id,isActive=True)
                 delsession.sessionEndDate = datetime.now()
