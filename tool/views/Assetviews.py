@@ -44,17 +44,17 @@ class asset_add(APIView):
         arrOfassets = request.data
         added_sucesfully = []
         for asset in arrOfassets:
-            if Asset.objects.filter(item_code=asset['ItemCode']).exists():
+           if Asset.objects.filter(item_code=asset['itemCode']).exists():
                 continue
             else:
                 new_asset = Asset()
-                new_asset.item_code = asset['ItemCode']
-                new_asset.item_name = asset['ItemName']
-                new_asset.asset_cls = asset['AssetClass']
-                new_asset.periodcat = asset['PeriodCat']
-                new_asset.Useful_life = asset['UsefulLife']
-                new_asset.Remain_life = asset['RemainLife']
-                new_asset.Warehouse_location = asset['Warehouse_location']
+                new_asset.item_code = asset['itemCode']
+                new_asset.item_name = asset['itemName']
+                new_asset.asset_cls = asset['assetClass']
+                new_asset.periodcat = asset['periodCat']
+                new_asset.Useful_life = asset['usefulLife']
+                new_asset.Remain_life = asset['remainLife']
+                new_asset.Warehouse_location = asset['warehouseLocation']
                 new_asset.save()
                 data = serializers.serialize('json', [new_asset,])
                 struct = json.loads(data)
