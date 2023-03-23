@@ -44,7 +44,7 @@ class asset_add(APIView):
         arrOfassets = request.data
         added_sucesfully = []
         for asset in arrOfassets:
-           if Asset.objects.filter(item_code=asset['itemCode']).exists():
+            if Asset.objects.filter(item_code=asset['itemCode']).exists():
                 continue
             else:
                 new_asset = Asset()
