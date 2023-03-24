@@ -181,7 +181,7 @@ class last_session_data(APIView):
                     data = session.objects.all().order_by('-sessionEndDate')
                     sess = data[0]
                     response_data = []
-                    sdata = Verification.objects.filter(sessionId=sess.sessionId)
+                    sdata = verification.objects.filter(sessionId=sess.sessionId)
                     for sdatas in sdata:
                         code = sdatas.asset.item_code
                         name = sdatas.asset.item_name
