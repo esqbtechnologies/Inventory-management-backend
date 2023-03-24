@@ -2,6 +2,7 @@ from genericpath import exists
 from os import stat
 from django.http import HttpResponse, JsonResponse
 from requests import Response
+import ivnt_mngmnt.settings as set
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
