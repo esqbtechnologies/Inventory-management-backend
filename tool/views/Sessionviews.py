@@ -160,3 +160,42 @@ class get_all_session(APIView):
             except:
                 return JsonResponse({'error': 'No sessions exists to show'}, status=status.HTTP_204_NO_CONTENT)
         return JsonResponse({'error': 'user is not authorized to get all Session'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class last_session_data(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self,request):
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        if user.role == 'General_manager':
+            try:
+                activesession = session.objects.get(isActive=True)
+                return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+            except:
+                try:
+                    data = session.objects.all().order_by('-sessionEndDate')
+                    sess = data[0]
+                    response_data = []
+                    sdata = Verification.objects.filter(sessionId=sess.sessionId)
+                    for sdatas in sdata:
+                        code = sdatas.asset.item_code
+                        name = sdatas.asset.item_name
+                        is_deleted = sdatas.asset.is_deleted
+                        data = serializers.serialize('json', [sdatas,])
+                        struct = json.loads(data)
+                        data = json.dumps(struct[0])
+                        data = json.loads(data)
+                        data['fields']['item_code'] = code
+                        data['fields']['item_name'] = name
+                        data['fields']['is_deleted'] = is_deleted
+                        response_data.append(data)
+                    return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+                except:
+                    return JsonResponse({'Result': 'No Session exists to Send data'}, status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({'error': 'user is not authorized to Restart session'}, status=status.HTTP_400_BAD_REQUEST)
+    
