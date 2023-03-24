@@ -9,6 +9,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from ..models.Assetmodels import asset as Asset
 from ..serializers import Assetserializer
 import json
+import jwt
 from django.core import serializers
 from rest_framework import status
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
