@@ -124,18 +124,21 @@ class add_comment(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             asset = request.data['item_code']
-            ids = request.data['sessionId']
+            session_id = request.data['sessionId']
             comme = request.data['comment']
-            if Verification.objects.filter(sessionId = ids).filter(asset = asset).filter(flag = True).exists():
+            assetdata = Asset.objects.get(item_code=asset)
+            verr = Verification.objects.get(sessionId = session_id,asset = assetdata)
+            if verr.flag == True:
                 return JsonResponse({'error':'This is a verified asset. Cant add comment'},status = status.HTTP_400_BAD_REQUEST)
             else:
-                ver = Verification.objects.get(sessionId=ids,asset = asset,flag = False)
-                ver.sessionId = ids
+                ver = Verification.objects.get(sessionId=session_id,asset = assetdata)
+                print("working")
+                ver.sessionId = session_id
                 ver.date = date.today()
                 ver.comment = comme
-                assetdata = Asset.objects.get(item_code=asset)
                 ver.asset = assetdata
                 ver.flag = False    
                 ver.save()
                 return JsonResponse({'Respone':'Comment Added Succesfully'},status = status.HTTP_200_OK)
         return JsonResponse({'error': 'user is not authorized to get Data'}, status=status.HTTP_400_BAD_REQUEST)
+
