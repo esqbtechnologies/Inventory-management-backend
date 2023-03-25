@@ -124,9 +124,9 @@ class add_comment(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             asset = request.data['item_code']
-            id = request.data['sessionId']
+            ids = request.data['sessionId']
             comme = request.data['comment']
-            if Verification.objects.filter(sessionId = id).filter(asset = asset).filter(flag = True).exists():
+            if Verification.objects.filter(sessionId = ids).filter(asset = asset).filter(flag = True).exists():
                 return JsonResponse({'error':'This is a verified asset. Cant add comment'},status = status.HTTP_400_BAD_REQUEST)
             else:
                 ver = Verification.objects.get(sessionId=id,asset = asset,flag = False)
