@@ -129,8 +129,8 @@ class add_comment(APIView):
             if Verification.objects.filter(sessionId = ids).filter(asset = asset).filter(flag = True).exists():
                 return JsonResponse({'error':'This is a verified asset. Cant add comment'},status = status.HTTP_400_BAD_REQUEST)
             else:
-                ver = Verification.objects.get(sessionId=id,asset = asset,flag = False)
-                ver.sessionId = id
+                ver = Verification.objects.get(sessionId=ids,asset = asset,flag = False)
+                ver.sessionId = ids
                 ver.date = date.today()
                 ver.comment = comme
                 assetdata = Asset.objects.get(item_code=asset)
