@@ -46,6 +46,7 @@ class otpRequest(APIView):
             # mail = EmailMessage(subject,message,recipient_list)
             # mail.send()
             return JsonResponse({'Response': 'Check Your Email For the OTP'})
-        except:
-            print(error)
-            return JsonResponse({'Response': 'Could Not send email please try again'})
+        
+        except Exception as e: # work on python 3.x
+            logger.error('Failed to send otp: '+ str(e))
+            return JsonResponse({'Response': 'OTP Not sent'})
