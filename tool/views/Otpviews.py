@@ -11,6 +11,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from rest_framework_jwt.settings import api_settings
 from datetime import datetime
+from django.utils import timezone
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import jwt
