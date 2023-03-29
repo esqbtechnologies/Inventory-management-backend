@@ -47,4 +47,5 @@ class otpRequest(APIView):
             # mail.send()
             return JsonResponse({'Response': 'Check Your Email For the OTP'})
         except:
+            print(error)
             return JsonResponse({'Response': 'Could Not send email please try again'})
