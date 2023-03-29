@@ -42,7 +42,7 @@ class otpRequest(APIView):
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [user.email, ]
             print(subject)
-            res = send_mail(subject, message, email_from, recipient_list)
+            send_mail(subject, message, email_from, recipient_list)
             # mail = EmailMessage(subject,message,recipient_list)
             # mail.send()
             return JsonResponse({'Response': 'Check Your Email For the OTP'})
