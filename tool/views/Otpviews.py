@@ -29,16 +29,22 @@ class otpRequest(APIView):
             if not user:
                 return JsonResponse({'Response': 'No user found with this Email'})
             token1 = random.randint(1000, 9999)
+            otp.objects.filter(user_id=user).delete()
             data = otp()
             data.num = token1
             data.user_id = user
-            data.date = datetime.now()
+            data.date = timezone.now()
+            data.flag = False
             data.save()
+            print("working")
             subject = 'welcome to Esqb Inventory Management system'
             message = f'Hi {user.email}, thank you for Using the Service.The otp to login/Change Password is {token1}.'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [user.email, ]
-            send_mail(subject, message, email_from, recipient_list)
+            print(subject)
+            res = send_mail(subject, message, email_from, recipient_list)
+            # mail = EmailMessage(subject,message,recipient_list)
+            # mail.send()
             return JsonResponse({'Response': 'Check Your Email For the OTP'})
         except:
-            return JsonResponse({'Response': 'No User found with this'})
+            return JsonResponse({'Response': 'Could Not send email please try again'})
