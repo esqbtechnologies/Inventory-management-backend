@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from ..models.Usermodels import User
 from ..models.Otpmodels import otp as OTP
+from ..models.Locationmodels import location
 from rest_framework import status
 import jwt
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -79,19 +80,28 @@ class register(APIView):
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request):
-        email = request.data['email']
-        password = request.data['password']
-        role = "Worker"
-        if request.data['role'] == '1':
-            role = "General_manager"
-        if request.data['role'] == '2':
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        if user.role == 'General_manager':
+            if User.objects.filter(email = request.data['email']).exists():
+                return JsonResponse({'error':'User with this email already exists'})
+            email = request.data['email']
+            password = request.data['password']
             role = "Store_manager"
-        user = User()
-        user.email = email
-        user.set_password(password)
-        user.role = role
-        user.save()
-        return HttpResponse('User Created')
+            if location.objects.filter(lname = request.data['location']).exists():
+                user = User()
+                user.email = email
+                user.set_password(password)
+                user.location = location.objects.get(lname = request.data['location'])
+                user.role = role
+                user.save()
+                return HttpResponse('User Created')
+            else:
+                return JsonResponse({'error':'The given location does not exists in the Db'},status = status.HTTP_400_BAD_REQUEST)    
+        return JsonResponse({'error':'Not authorized to create user'})    
 
 
 class obtainToken(ObtainJSONWebToken):
@@ -108,6 +118,7 @@ class obtainToken(ObtainJSONWebToken):
             if not user or tdata.num != otp or tdata.flag == True:
                 return JsonResponse({'Response': 'otp did not matched'})
             tdata.flag = True
+            tdata.save()
             res = super().post(request)
             return res
         except:
