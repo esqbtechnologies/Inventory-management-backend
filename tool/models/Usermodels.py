@@ -2,12 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager
-
+from .Locationmodels import location
 
 # Options of role of USER
 role_choice = (
     ('General_manager', 'General_manager'),
-    ('Store_manager', 'Store_manager'),
+    ('Super_admin', 'Super_admin'),
     ('Worker', 'Worker'),
 )
 
@@ -34,13 +34,13 @@ class MyUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     email = models.EmailField(max_length=255, unique=True,)
-    name = models.CharField(max_length=200, null=True)
+    name = models.CharField(max_length=200,blank = True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     role = models.CharField(
         max_length=100, choices=role_choice, default='Worker')
-
+    location = models.ForeignKey(location,blank = True,null = True,on_delete=models.SET_NULL)
     date_joined = models.DateTimeField(default=timezone.now)
     objects = MyUserManager()
     USERNAME_FIELD = 'email'
