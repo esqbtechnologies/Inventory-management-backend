@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .views import Verificationviews
 from .views import Sessionviews
 from .views import Otpviews
+from .views import Locationviews
 urlpatterns = [
     # End point to login (Type : POST,Header: Empty, Data: email,password)
     path('api/login/', csrf_exempt(Userviews.obtainToken.as_view()), name='login'),
@@ -58,5 +59,7 @@ urlpatterns = [
          csrf_exempt(Verificationviews.session_data.as_view()), name='assetsinsession'),
     path('api/addComment/',csrf_exempt(Verificationviews.add_comment.as_view()),name ='addComment'),
     path('api/del/',csrf_exempt(Assetviews.delete_asset.as_view()),name = 'deleteAsset'),
-    path('api/last_session_data/',csrf_exempt(Sessionviews.last_session_data.as_view()),name = 'LastSessionData')
+    path('api/last_session_data/',csrf_exempt(Sessionviews.last_session_data.as_view()),name = 'LastSessionData'),
+    path('api/createlocation/',csrf_exempt(Locationviews.addLocation.as_view()),name = 'addLocation'),
+    path('api/getlocation/',csrf_exempt(Locationviews.get_location.as_view()),name = 'get_location')   
 ]
