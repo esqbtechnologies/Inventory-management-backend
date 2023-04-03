@@ -35,11 +35,12 @@ class create_verification(APIView):
                 defaults = {'date':date.today()}
             )
             print(verification.geo_location)
-            verification.geo_location = request.data['geo_location']
+            # verification.geo_location = request.data['geo_location']
             verification.sessionId = request.data['sessionId']
             verification.date = request.data['date']
             worker = User.objects.get(id=request.data['worker_id'])
             verification.worker_id = worker
+            verification.geo_location = worker.location
             verification.flag = True            
             verification.asset = assetdata
             verification.save()
@@ -55,6 +56,7 @@ class create_verification(APIView):
                 data = json.loads(data)
                 data['fields']['item_code'] = code
                 data['fields']['item_name'] = name
+                data['fields']['locationofitem'] = data.asset.Warehouse_location
                 verifications.append(data)
 
             return JsonResponse(verifications, safe=False, status=status.HTTP_200_OK)
@@ -106,6 +108,7 @@ class session_data(APIView):
                 data = json.loads(data)
                 data['fields']['item_code'] = code
                 data['fields']['item_name'] = name
+                data['fields']['locationofitem'] = data.asset.Warehouse_location
                 response_data.append(data)
             return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
         return JsonResponse({'error': 'user is not authorized to get Data'}, status=status.HTTP_400_BAD_REQUEST)

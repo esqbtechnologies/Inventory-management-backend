@@ -15,28 +15,32 @@ import json
 from django.core import serializers
 from ..models.Verificationmodels import verification
 from ..models.Assetmodels import asset
+from ..models.Locationmodels import location
 
 class create_session(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get(self, request):
+    def post(self, request):
         token = request.headers['Authorization']
         token = token[4:]
         payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
                              algorithms=['HS256'])
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
-            id = uuid.uuid4()
-            newsession = session()
-            newsession.isActive = True
-            newsession.sessionStartDate = date.today()
-            newsession.sessionId = id.hex
-            newsession.save()
-            data = serializers.serialize('json', [newsession,])
-            struct = json.loads(data)
-            data = json.dumps(struct[0])
-            return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
+            if location.objects.filter(lname = request.data['location']).exists():
+                id = uuid.uuid4()
+                newsession = session()
+                newsession.isActive = True
+                newsession.sessionStartDate = date.today()
+                newsession.sessionId = id.hex
+                newsession.location = location.objects.get(lname = request.data['location'])
+                newsession.save()
+                data = serializers.serialize('json', [newsession,])
+                struct = json.loads(data)
+                data = json.dumps(struct[0])
+                return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
+            return JsonResponse({'error':'The location you requested for to start session dos not exists in the Db.'},status = status.HTTP_204_NO_CONTENT)    
         return JsonResponse({'error': 'user is not authorized to start session'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -91,15 +95,15 @@ class get_active_session(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get(self, request):
+    def post(self, request):
         try:
-            activesession = session.objects.get(isActive=True)
+            activesession = session.objects.get(isActive=True,location = request.data['location'])
             data = serializers.serialize('json', [activesession,])
             struct = json.loads(data)
             data = json.dumps(struct[0])
             return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
         except:
-            return JsonResponse({'Result': 'No Active Session exists'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+            return JsonResponse({'Result': 'No Active Session exists for this location'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 # API To restart latest session
 
@@ -109,7 +113,7 @@ class restart_last_session(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get(self, request):
+    def post(self, request):
         token = request.headers['Authorization']
         token = token[4:]
         payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
@@ -117,11 +121,11 @@ class restart_last_session(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             try:
-                activesession = session.objects.get(isActive=True)
-                return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+                activesession = session.objects.get(isActive=True,location = request.data['location'])
+                return JsonResponse({'Result': 'There exits an already active session in this location'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
                 try:
-                    data = session.objects.all().order_by('-sessionEndDate')
+                    data = session.objects.filter(location = request.data['location']).order_by('-sessionEndDate')
                     sess = data[0]
                     sess.isActive = True
                     sess.sessionEndDate = None
@@ -141,7 +145,7 @@ class get_all_session(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get(self, request):
+    def post(self, request):
         token = request.headers['Authorization']
         token = token[4:]
         payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
@@ -149,7 +153,7 @@ class get_all_session(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             try:
-                all_session = session.objects.all()
+                all_session = session.objects.filter(location = request.data['location'])
                 response_data = []
                 for sessions in all_session:
                     data = serializers.serialize('json', [sessions,])
@@ -166,7 +170,7 @@ class last_session_data(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get(self,request):
+    def post(self,request):
         token = request.headers['Authorization']
         token = token[4:]
         payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
@@ -174,11 +178,11 @@ class last_session_data(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             try:
-                activesession = session.objects.get(isActive=True)
+                activesession = session.objects.get(isActive=True,location = request.data['location'])
                 return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
                 try:
-                    data = session.objects.all().order_by('-sessionEndDate')
+                    data = session.objects.filter(location = request.data['location']).order_by('-sessionEndDate')
                     sess = data[0]
                     response_data = []
                     sdata = verification.objects.filter(sessionId=sess.sessionId)
