@@ -36,15 +36,12 @@ class otpRequest(APIView):
             data.date = timezone.now()
             data.flag = False
             data.save()
-            print("working")
             subject = 'welcome to Esqb Inventory Management system'
             message = f'Hi {user.email}, thank you for Using the Service.The otp to login/Change Password is {token1}.'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [user.email, ]
             print(subject)
             send_mail(subject, message, email_from, recipient_list)
-            # mail = EmailMessage(subject,message,recipient_list)
-            # mail.send()
             return JsonResponse({'Response': 'Check Your Email For the OTP'})
         
         except Exception as e: # work on python 3.x
