@@ -180,4 +180,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "dummy007gupta@gmail.com"
 DEFAULT_FROM_EMAIL = "myusername@gmail.com"
-EMAIL_HOST_PASSWORD = "mlizhezvrixvprll"
+EMAIL_HOST_PASSWORD = ""
