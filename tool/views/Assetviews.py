@@ -32,7 +32,8 @@ class asset_get(APIView):
             data = serializers.serialize('json', [asset_data,])
             struct = json.loads(data)
             data = json.dumps(struct[0])
-            print(data)
+            data = json.loads(data)
+            data['fields']['location'] = asset_data.Warehouse_location.lname
             return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
         else:
             return JsonResponse({'error': 'Data Does not exist'}, status=status.HTTP_400_BAD_REQUEST)
@@ -65,6 +66,8 @@ class asset_add(APIView):
                     data = serializers.serialize('json', [new_asset,])
                     struct = json.loads(data)
                     data = json.dumps(struct[0])
+                    data = json.loads(data)
+                    data['fields']['location'] = asset['warehouseLocation']
                     added_sucesfully.append(data)
                     coun = coun + 1
                 else:
@@ -154,6 +157,8 @@ class get_all_asset(APIView):
             data = serializers.serialize('json', [asset,])
             struct = json.loads(data)
             data = json.dumps(struct[0])
+            data = json.loads(data)
+            data['fields']['location'] = asset.Warehouse_location.lname
             response_data.append(data)
         return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
 
