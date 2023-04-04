@@ -43,6 +43,7 @@ class create_session(APIView):
                 data = json.dumps(struct[0])
                 data = json.loads(data)
                 data['fields']['locationName'] = request.data['location'] 
+                data = json.dumps(data)
                 return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
             return JsonResponse({'error':'The location you requested for to start session dos not exists in the Db.'},status = status.HTTP_204_NO_CONTENT)    
         return JsonResponse({'error': 'user is not authorized to start session'}, status=status.HTTP_400_BAD_REQUEST)
@@ -107,6 +108,7 @@ class get_active_session(APIView):
             data = json.dumps(struct[0])
             data = json.loads(data)
             data['fields']['location_name'] = request.data['location'] 
+            data = json.dumps(data)
             return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
         except:
             is_active = False
@@ -142,6 +144,7 @@ class restart_last_session(APIView):
                     data = json.dumps(struct[0])
                     data = json.loads(data)
                     data['fields']['location_name'] = request.data['location']
+                    data = json.dumps(data)
                     return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
                 except:
                     return JsonResponse({'Result': 'No Session exists to Restart'}, status=status.HTTP_204_NO_CONTENT)
@@ -170,6 +173,7 @@ class get_all_session(APIView):
                     data = json.dumps(struct[0])
                     data = json.loads(data)
                     data['fields']['location_name'] = request.data['location']
+                    data = json.dumps(data)
                     response_data.append(data)
                 return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
             except:
@@ -208,6 +212,7 @@ class last_session_data(APIView):
                         data['fields']['item_code'] = code
                         data['fields']['item_name'] = name
                         data['fields']['is_deleted'] = is_deleted
+                        data = json.dumps(data)
                         response_data.append(data)
                     return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
                 except:
