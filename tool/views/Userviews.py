@@ -65,6 +65,9 @@ class DecodeToken(APIView):
             data = serializers.serialize('json', [user,])
             struct = json.loads(data)
             data = json.dumps(struct[0])
+            data = json.loads(data)
+            lna = location.objects.get(lname = user.location).lname
+            data['fields']['location_name'] = lna
             return Response(data, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError as e:
             return Response({'error': 'Activations link expired'}, status=status.HTTP_400_BAD_REQUEST)
