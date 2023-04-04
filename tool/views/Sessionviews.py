@@ -29,6 +29,8 @@ class create_session(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             if location.objects.filter(lname = request.data['location']).exists():
+                if session.objects.filter(isActive=True).filter(location__lname = request.data['location']).exists():
+                    return JsonResponse({'Response':'An active session already exists for the location'})
                 id = uuid.uuid4()
                 newsession = session()
                 newsession.isActive = True
@@ -39,6 +41,8 @@ class create_session(APIView):
                 data = serializers.serialize('json', [newsession,])
                 struct = json.loads(data)
                 data = json.dumps(struct[0])
+                data = json.loads(data)
+                data['fields']['locationName'] = request.data['location'] 
                 return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
             return JsonResponse({'error':'The location you requested for to start session dos not exists in the Db.'},status = status.HTTP_204_NO_CONTENT)    
         return JsonResponse({'error': 'user is not authorized to start session'}, status=status.HTTP_400_BAD_REQUEST)
@@ -97,13 +101,16 @@ class get_active_session(APIView):
 
     def post(self, request):
         try:
-            activesession = session.objects.get(isActive=True,location = request.data['location'])
+            activesession = session.objects.get(isActive=True,location__lname = request.data['location'])
             data = serializers.serialize('json', [activesession,])
             struct = json.loads(data)
             data = json.dumps(struct[0])
+            data = json.loads(data)
+            data['fields']['location_name'] = request.data['location'] 
             return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
         except:
-            return JsonResponse({'Result': 'No Active Session exists for this location'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+            is_active = False
+            return JsonResponse(is_active,safe = False, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 # API To restart latest session
 
@@ -121,11 +128,11 @@ class restart_last_session(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             try:
-                activesession = session.objects.get(isActive=True,location = request.data['location'])
+                activesession = session.objects.get(isActive=True,location__lname = request.data['location'])
                 return JsonResponse({'Result': 'There exits an already active session in this location'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
                 try:
-                    data = session.objects.filter(location = request.data['location']).order_by('-sessionEndDate')
+                    data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
                     sess = data[0]
                     sess.isActive = True
                     sess.sessionEndDate = None
@@ -133,6 +140,8 @@ class restart_last_session(APIView):
                     data = serializers.serialize('json', [sess,])
                     struct = json.loads(data)
                     data = json.dumps(struct[0])
+                    data = json.loads(data)
+                    data['fields']['location_name'] = request.data['location']
                     return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
                 except:
                     return JsonResponse({'Result': 'No Session exists to Restart'}, status=status.HTTP_204_NO_CONTENT)
@@ -153,12 +162,14 @@ class get_all_session(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             try:
-                all_session = session.objects.filter(location = request.data['location'])
+                all_session = session.objects.filter(location__lname = request.data['location'])
                 response_data = []
                 for sessions in all_session:
                     data = serializers.serialize('json', [sessions,])
                     struct = json.loads(data)
                     data = json.dumps(struct[0])
+                    data = json.loads(data)
+                    data['fields']['location_name'] = request.data['location']
                     response_data.append(data)
                 return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
             except:
@@ -178,11 +189,11 @@ class last_session_data(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             try:
-                activesession = session.objects.get(isActive=True,location = request.data['location'])
+                activesession = session.objects.get(isActive=True,location__lname = request.data['location'])
                 return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
                 try:
-                    data = session.objects.filter(location = request.data['location']).order_by('-sessionEndDate')
+                    data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
                     sess = data[0]
                     response_data = []
                     sdata = verification.objects.filter(sessionId=sess.sessionId)
