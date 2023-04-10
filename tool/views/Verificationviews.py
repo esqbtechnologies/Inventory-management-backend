@@ -50,14 +50,14 @@ class create_verification(APIView):
             for data in verificationByUser:
                 code = data.asset.item_code
                 name = data.asset.item_name
-                data = serializers.serialize('json', [data,])
-                struct = json.loads(data)
-                data = json.dumps(struct[0])
-                data = json.loads(data)
-                data['fields']['item_code'] = code
-                data['fields']['item_name'] = name
-                data['fields']['locationofitem'] = data.asset.Warehouse_location
-                verifications.append(data)
+                dumm = serializers.serialize('json', [data,])
+                struct = json.loads(dumm)
+                dumm = json.dumps(struct[0])
+                dumm = json.loads(dumm)
+                dumm['fields']['item_code'] = code
+                dumm['fields']['item_name'] = name
+                dumm['fields']['locationofitem'] = data.asset.Warehouse_location.lname
+                verifications.append(dumm)
 
             return JsonResponse(verifications, safe=False, status=status.HTTP_200_OK)
 
