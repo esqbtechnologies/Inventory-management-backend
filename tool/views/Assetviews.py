@@ -61,8 +61,7 @@ class asset_add(APIView):
                     new_asset.periodcat = asset['periodCat']
                     new_asset.Useful_life = asset['usefulLife']
                     new_asset.Remain_life = asset['remainLife']
-                    if 'amount' in asset:
-                        new_asset.amount = asset['amount']
+                    new_asset.amount = asset['amount']
                     new_asset.Warehouse_location = location.objects.get(lname=asset['warehouseLocation'])
                     new_asset.save()
                     data = serializers.serialize('json', [new_asset,])
