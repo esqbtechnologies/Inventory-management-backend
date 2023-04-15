@@ -14,7 +14,7 @@ class asset(models.Model):
     Warehouse_location = models.ForeignKey(location,blank = True,null = True,on_delete=models.SET_NULL)
     Qr_id = models.CharField(max_length=500, null=True, blank=True)
     is_deleted = models.BooleanField(default = False)
-    amount = models.CharField(blank = True, null = True)
+    amount = models.CharField(max_length= 500,blank = True, null = True)
     def __str__(self):
         return self.item_code
     # verification_id = models.ForeignKey(
