@@ -102,6 +102,7 @@ class session_data(APIView):
             for sdatas in sdata:
                 code = sdatas.asset.item_code
                 name = sdatas.asset.item_name
+                amt = sdatas.asset.amount
                 data = serializers.serialize('json', [sdatas,])
                 struct = json.loads(data)
                 data = json.dumps(struct[0])
@@ -109,6 +110,7 @@ class session_data(APIView):
                 data['fields']['item_code'] = code
                 data['fields']['item_name'] = name
                 data['fields']['locationofitem'] = sdatas.asset.Warehouse_location.lname
+                data['fields']['amount'] = amt
                 response_data.append(data)
             return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
         return JsonResponse({'error': 'user is not authorized to get Data'}, status=status.HTTP_400_BAD_REQUEST)
