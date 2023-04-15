@@ -94,7 +94,7 @@ class register(APIView):
                 return JsonResponse({'error':'User with this email already exists'})
             email = request.data['email']
             password = request.data['password']
-            role = "Store_manager"
+            role = "Worker"
             if location.objects.filter(lname = request.data['location']).exists():
                 user = User()
                 user.email = email
