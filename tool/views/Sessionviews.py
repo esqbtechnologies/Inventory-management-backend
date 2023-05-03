@@ -77,17 +77,19 @@ class end_session(APIView):
                             data = json.dumps(struct[0])
                             unvarified_asset.append(data)
                     else:
-                        print(datas)
-                        dummyver = verification()
-                        dummyver.date = date.today()
-                        dummyver.sessionId = id
-                        dummyver.asset = datas
-                        dummyver.flag = False
-                        dummyver.save()
-                        data = serializers.serialize('json', [datas,])
-                        struct = json.loads(data)
-                        data = json.dumps(struct[0])
-                        unvarified_asset.append(data)    
+                        if datas.Warehouse_location == delsession.location:
+                            dummyver = verification()
+                            dummyver.date = date.today()
+                            dummyver.sessionId = id
+                            dummyver.asset = datas
+                            dummyver.flag = False
+                            dummyver.save()
+                            data = serializers.serialize('json', [datas,])
+                            struct = json.loads(data)
+                            data = json.dumps(struct[0])
+                            unvarified_asset.append(data)
+                        else:
+                            continue    
                 delsession.save()        
                 return JsonResponse(unvarified_asset, safe = False,status=status.HTTP_200_OK)
             except:
