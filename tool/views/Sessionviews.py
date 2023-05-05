@@ -202,7 +202,11 @@ class last_session_data(APIView):
                     data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
                     sess = data[0]
                     response_data = []
-                    sdata = verification.objects.filter(sessionId=sess.sessionId)
+                    page_size = 100
+                    paginator = PageNumberPagination()
+                    paginator.page_size = page_size
+                    aset = verification.objects.filter(sessionId=sess.sessionId)
+                    sdata = paginator.paginate_queryset(aset,request)
                     for sdatas in sdata:
                         code = sdatas.asset.item_code
                         name = sdatas.asset.item_name
@@ -216,8 +220,10 @@ class last_session_data(APIView):
                         data['fields']['is_deleted'] = is_deleted
                         data = json.dumps(data)
                         response_data.append(data)
+                    return paginator.get_paginated_response(response_data)
                     return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
                 except:
                     return JsonResponse({'Result': 'No Session exists to Send data'}, status=status.HTTP_204_NO_CONTENT)
         return JsonResponse({'error': 'user is not authorized to Restart session'}, status=status.HTTP_400_BAD_REQUEST)
+    
     
