@@ -16,6 +16,7 @@ from django.core import serializers
 from ..models.Verificationmodels import verification
 from ..models.Assetmodels import asset
 from ..models.Locationmodels import location
+from rest_framework.pagination import PageNumberPagination
 
 class create_session(APIView):
     permission_classes = (IsAuthenticated,)
