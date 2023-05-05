@@ -16,6 +16,7 @@ from ..models.Locationmodels import location
 from django.core import serializers
 from rest_framework import status
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from rest_framework.pagination import PageNumberPagination
 
 # API To get asset from item_code
 
@@ -48,11 +49,11 @@ class asset_add(APIView):
     def post(self, request):
         arrOfassets = request.data
         added_sucesfully = []
+        coun = 1
         for asset in arrOfassets:
             if Asset.objects.filter(item_code=asset['itemCode']).exists():
                 continue
             else:
-                coun = 1
                 if location.objects.filter(lname = asset['warehouseLocation']).exists():
                     new_asset = Asset()
                     new_asset.item_code = asset['itemCode']
@@ -147,14 +148,35 @@ class tagQr(APIView):
 
 # API for getting all Asset
 
+# class get_all_asset(APIView):
+
+#     permission_classes = (IsAuthenticated,)
+#     authentication_classes = (JSONWebTokenAuthentication,)
+
+#     def get(self, request):
+#         asset_data = Asset.objects.all()
+#         response_data = []
+#         for asset in asset_data:
+#             data = serializers.serialize('json', [asset,])
+#             struct = json.loads(data)
+#             data = json.dumps(struct[0])
+#             data = json.loads(data)
+#             data['fields']['location'] = asset.Warehouse_location.lname
+#             data = json.dumps(data)
+#             response_data.append(data)
+#         return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+
 class get_all_asset(APIView):
 
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
-
     def get(self, request):
-        asset_data = Asset.objects.all()
+        aset = Asset.objects.all()
+        page_size = 100
         response_data = []
+        paginator = PageNumberPagination()
+        paginator.page_size = page_size
+        asset_data = paginator.paginate_queryset(aset,request)
         for asset in asset_data:
             data = serializers.serialize('json', [asset,])
             struct = json.loads(data)
@@ -163,7 +185,7 @@ class get_all_asset(APIView):
             data['fields']['location'] = asset.Warehouse_location.lname
             data = json.dumps(data)
             response_data.append(data)
-        return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(response_data)
 
 # API to delete asset
 
