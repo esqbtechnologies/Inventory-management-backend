@@ -98,11 +98,17 @@ class verification_details(APIView):
         return JsonResponse(detailArray, safe=False, status=status.HTTP_200_OK)
 
 class MySerializer():
-    def __init__(self):
-    
-    def to_representation(self, instance):
-        return serializers.serialize('json', [instance])
-    
+    def __init__(self,instance):
+        self.queryset = instance
+        
+    def to_representation():
+        outpt = []
+        for resul in queryset:
+            data = serializers.serialize('json',[resul,])
+            struct - json.loads(data)
+            data = json.dumps(struct[0])
+            outpt.append(data)
+        return outpt
     
 class fullTextSearch(ListAPIView):
     permission_classes = (IsAuthenticated,)
@@ -119,7 +125,9 @@ class fullTextSearch(ListAPIView):
         queryset = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
         print(queryset)
-        serialized_data = self.serializer_class.to_representation(queryset)
+        inst = Myserializer(queryset)
+        serialized_data = inst.to_representation()
+#         serialized_data = self.serializer_class.to_representation(queryset)
         print(serialized_data)
 #         outpt = []
 #         for resul in queryset:
