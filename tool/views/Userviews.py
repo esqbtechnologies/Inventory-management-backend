@@ -101,6 +101,7 @@ class register(APIView):
                 user.set_password(password)
                 user.location = location.objects.get(lname = request.data['location'])
                 user.role = role
+                user.name = request.data['name']
                 user.save()
                 return HttpResponse('User Created')
             else:
