@@ -125,7 +125,7 @@ class fullTextSearch(ListAPIView):
         queryset = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
         print(queryset)
-        inst = Myserializer(queryset)
+        inst = MySerializer(queryset)
         serialized_data = inst.to_representation()
 #         serialized_data = self.serializer_class.to_representation(queryset)
         print(serialized_data)
