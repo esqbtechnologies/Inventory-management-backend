@@ -119,13 +119,13 @@ class fullTextSearch(ListAPIView):
         print(queryset)
 #         serialized_data = self.serializer_class.to_representation(queryset)
 #         print(serialized_data)
-#         outpt = []
+        outpt = []
         for resul in queryset:
             data = serializers.serialize('json', [resul,])
             struct = json.loads(data)
             data = json.dumps(struct[0])
             outpt.append(data)
-        return JsonResponse(output, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse(outpt, safe=False, status=status.HTTP_200_OK)
 
 
 # API for Tagging
