@@ -103,7 +103,7 @@ class MySerializer():
         
     def to_representation(self):
         outpt = []
-        for resul in queryset:
+        for resul in self.queryset:
             data = serializers.serialize('json',[resul,])
             struct - json.loads(data)
             data = json.dumps(struct[0])
