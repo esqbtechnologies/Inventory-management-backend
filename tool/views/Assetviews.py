@@ -98,6 +98,8 @@ class verification_details(APIView):
         return JsonResponse(detailArray, safe=False, status=status.HTTP_200_OK)
 
 class MySerializer():
+    def __init__(self):
+    
     def to_representation(self, instance):
         return serializers.serialize('json', [instance])
     
@@ -117,15 +119,15 @@ class fullTextSearch(ListAPIView):
         queryset = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
         print(queryset)
-#         serialized_data = self.serializer_class.to_representation(queryset)
-#         print(serialized_data)
-        outpt = []
-        for resul in queryset:
-            data = serializers.serialize('json', [resul,])
-            struct = json.loads(data)
-            data = json.dumps(struct[0])
-            outpt.append(data)
-        return JsonResponse(outpt, safe=False, status=status.HTTP_200_OK)
+        serialized_data = self.serializer_class.to_representation(queryset)
+        print(serialized_data)
+#         outpt = []
+#         for resul in queryset:
+#             data = serializers.serialize('json', [resul,])
+#             struct = json.loads(data)
+#             data = json.dumps(struct[0])
+#             outpt.append(data)
+        return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
 
 
 # API for Tagging
