@@ -101,7 +101,7 @@ class MySerializer():
     def __init__(self,instance):
         self.queryset = instance
         
-    def to_representation():
+    def to_representation(self):
         outpt = []
         for resul in queryset:
             data = serializers.serialize('json',[resul,])
