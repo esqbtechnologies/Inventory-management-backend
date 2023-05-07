@@ -97,23 +97,50 @@ class verification_details(APIView):
         # print(data)
         return JsonResponse(detailArray, safe=False, status=status.HTTP_200_OK)
 
-class MySerializer():
-    def __init__(self,instance):
-        self.queryset = instance
+# class MySerializer():
+#     def __init__(self,instance):
+#         self.queryset = instance
         
-    def to_representation(self):
-        outpt = []
-        for resul in self.queryset:
-            data = serializers.serialize('json',[resul,])
-            struct - json.loads(data)
-            data = json.dumps(struct[0])
-            outpt.append(data)
-        return outpt
+#     def to_representation(self):
+#         outpt = []
+#         for resul in self.queryset:
+#             data = serializers.serialize('json',[resul,])
+#             struct - json.loads(data)
+#             data = json.dumps(struct[0])
+#             outpt.append(data)
+#         return outpt
     
+# class fullTextSearch(ListAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     authentication_classes = (JSONWebTokenAuthentication,)
+#     serializer_class = MySerializer
+#     model = Asset
+    
+#     def get_queryset(self):
+#         query = self.request.query_params.get("q")
+#         print(query)
+#         search_vector = SearchVector("item_code", "item_name", "asset_cls",
+#                                      "periodcat", "Useful_life", "Remain_life", "Warehouse_location", "Qr_id")
+#         search_query = SearchQuery(query)
+#         queryset = Asset.objects.annotate(
+#             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
+#         print(queryset)
+#         inst = MySerializer(queryset)
+#         serialized_data = inst.to_representation()
+# #         serialized_data = self.serializer_class.to_representation(queryset)
+#         print(serialized_data)
+# #         outpt = []
+# #         for resul in queryset:
+# #             data = serializers.serialize('json', [resul,])
+# #             struct = json.loads(data)
+# #             data = json.dumps(struct[0])
+# #             outpt.append(data)
+#         return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
+
 class fullTextSearch(ListAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
-    serializer_class = MySerializer
+    serializer_class = Assetserializer
     model = Asset
     
     def get_queryset(self):
@@ -125,16 +152,12 @@ class fullTextSearch(ListAPIView):
         queryset = Asset.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
         print(queryset)
-        inst = MySerializer(queryset)
-        serialized_data = inst.to_representation()
-#         serialized_data = self.serializer_class.to_representation(queryset)
-        print(serialized_data)
-#         outpt = []
-#         for resul in queryset:
-#             data = serializers.serialize('json', [resul,])
-#             struct = json.loads(data)
-#             data = json.dumps(struct[0])
-#             outpt.append(data)
+        serialized_data = []
+        for resul in queryset:
+            data = serializers.serialize('json', [resul,])
+            struct = json.loads(data)
+            data = json.dumps(struct[0])
+            serialized_data.append(data)
         return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
 
 
