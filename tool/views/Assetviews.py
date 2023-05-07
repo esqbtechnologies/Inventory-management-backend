@@ -122,7 +122,7 @@ class fullTextSearch(ListAPIView):
             struct = json.loads(data)
             data = json.dumps(struct[0])
             serialized_data.append(data)
-        return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse(queryset, safe=False, status=status.HTTP_200_OK)
 
 
 # API for Tagging
