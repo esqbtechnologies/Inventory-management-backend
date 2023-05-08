@@ -63,6 +63,7 @@ urlpatterns = [
     path('api/createlocation/',csrf_exempt(Locationviews.addLocation.as_view()),name = 'addLocation'),
     path('api/getlocation/',csrf_exempt(Locationviews.get_location.as_view()),name = 'get_location'),
     path('api/updateAsset/',csrf_exempt(Assetviews.update_asset.as_view()),name = 'updateAsset'),
-    path('api/last_session_amt/',csrf_exempt(Sessionviews.last_session_amt.as_view()),name = 'LastSessionAmt')
+    path('api/last_session_amt/',csrf_exempt(Sessionviews.last_session_amt.as_view()),name = 'LastSessionAmt'),
+    path('api/untaggedcnt/',csrf_exempt(Assetviews.cnt_untaged.as_view()),name = 'UntaggedCount')
     
 ]
