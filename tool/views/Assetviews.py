@@ -247,3 +247,33 @@ class delete_asset(APIView):
             ass.save()
             return JsonResponse({'Response':'Asset Deleted Sucesfully'},status = status.HTTP_200_OK)
         return JsonResponse({'error': 'user is not authorized to delete asset'},status = status.HTTP_400_BAD_REQUEST)
+    
+# API to update Asseet    
+class update_asset(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self,request):
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        if user.role == 'General_manager':
+            asset = request.data
+            if location.objects.filter(lname = asset['warehouseLocation']).exists():
+                Asset.objects.filter(item_code=asset['itemCode']).update(item_name = asset['itemName'],asset_cls = asset['assetClass'],periodcat = asset['periodCat'],Useful_life = asset['usefulLife'],Remain_life = asset['remainLife'],amount = asset['amount'],Warehouse_location = location.objects.get(lname=asset['warehouseLocation']))
+                asset_data = Asset.objects.get(item_code=asset['itemCode'])
+                data = serializers.serialize('json', [asset_data,])
+                struct = json.loads(data)
+                data = json.dumps(struct[0])
+                data = json.loads(data)
+                data['fields']['location'] = asset_data.Warehouse_location.lname
+                data = json.dumps(data)
+                print(data)
+                return JsonResponse(data,safe = False,status= status.HTTP_200_OK)
+            else:
+                return JsonResponse({'error':'The location given does not exists in the DB'},status = status.HTTP_404_NOT_FOUND)
+        else:
+            return JsonResponse({'error':'The user is not authorized to update the asset'},status = status.HTTP_406_NOT_ACCEPTABLE)    
