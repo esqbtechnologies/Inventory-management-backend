@@ -246,6 +246,7 @@ class last_session_amt(APIView):
                     data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
                     sess = data[0]
                     aset = verification.objects.filter(sessionId=sess.sessionId)
+                    print(typeof(aset))
                     totalaset = len(aset)
                     founaset = len(verification.objects.filter(sessionId = sess.sessionId).filter(flag = True))
                     amt = 0
