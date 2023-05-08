@@ -252,7 +252,7 @@ class last_session_amt(APIView):
                     notfnd = verification.objects.filter(sessionId = sess.sessionId).filter(flag = False)
                     for datas in notfnd:
                         if datas.asset.amount != "":
-                            amt = amt + int(datas.asset.amounnt)
+                            amt = amt + int(datas.asset.amount)
                     return JsonResponse({'TotalAsset':totalaset,'FoundAsset':founaset,'Amount':amt},status = status.HTTP_200_OK)        
 
                 else:
