@@ -242,11 +242,10 @@ class last_session_amt(APIView):
                 activesession = session.objects.get(isActive=True,location__lname = request.data['location'])
                 return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
-                try:
+                if session.objects.filter(location__lname = request.data['location']).exist():
                     data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
                     sess = data[0]
                     aset = verification.objects.filter(sessionId=sess.sessionId)
-                    print(typeof(aset))
                     totalaset = len(aset)
                     founaset = len(verification.objects.filter(sessionId = sess.sessionId).filter(flag = True))
                     amt = 0
@@ -256,9 +255,10 @@ class last_session_amt(APIView):
                             amt = amt + int(data.asset.amounnt)
                     return JsonResponse({'TotalAsset':totalaset,'FoundAsset':founaset,'Amount':amt},status = status.HTTP_200_OK)        
 
-                except:
+                else:
                     return JsonResponse({'Result': 'No Session exists to Send data'}, status=status.HTTP_204_NO_CONTENT)
         return JsonResponse({'error': 'user is not authorized to Restart session'}, status=status.HTTP_400_BAD_REQUEST)  
+ 
 
     
     
