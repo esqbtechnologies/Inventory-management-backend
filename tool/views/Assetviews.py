@@ -137,32 +137,52 @@ class verification_details(APIView):
 # #             outpt.append(data)
 #         return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
 
+# class fullTextSearch(ListAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     authentication_classes = (JSONWebTokenAuthentication,)
+#     serializer_class = Assetserializer
+#     model = Asset
+    
+#     def get_queryset(self):
+#         query = self.request.query_params.get("q")
+#         print(query)
+#         search_vector = SearchVector("item_code", "item_name", "asset_cls",
+#                                      "periodcat", "Useful_life", "Remain_life", "Warehouse_location", "Qr_id")
+#         search_query = SearchQuery(query)
+#         queryset = Asset.objects.annotate(
+#             search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
+#         queryset = queryset.values()
+#         print(queryset)
+#         serialized_data = serializers.serialize("json", queryset)
+#         serialized_data = json.loads(serialized_data)
+# #         serialized_data = self.serializer_class(queryset,many = True).data
+# #         for resul in queryset:
+# #             data = serializers.serialize('json', [resul,])
+# #             struct = json.loads(data)
+# #             data = json.dumps(struct[0])
+# #             serialized_data.append(data)
+#         return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
+
 class fullTextSearch(ListAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
-    serializer_class = Assetserializer
-    model = Asset
-    
-    def get_queryset(self):
-        query = self.request.query_params.get("q")
+
+    def post(self,request):
+        query = request.data['q']
         print(query)
         search_vector = SearchVector("item_code", "item_name", "asset_cls",
                                      "periodcat", "Useful_life", "Remain_life", "Warehouse_location", "Qr_id")
         search_query = SearchQuery(query)
         queryset = Asset.objects.annotate(
-            search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by("-rank")
-        queryset = queryset.values()
+            search=search_vector).filter(search=search_query)
         print(queryset)
-        serialized_data = serializers.serialize("json", queryset)
-        serialized_data = json.loads(serialized_data)
-#         serialized_data = self.serializer_class(queryset,many = True).data
-#         for resul in queryset:
-#             data = serializers.serialize('json', [resul,])
-#             struct = json.loads(data)
-#             data = json.dumps(struct[0])
-#             serialized_data.append(data)
+        serialized_data = []
+        for resul in queryset:
+            data = serializers.serialize('json', [resul,])
+            struct = json.loads(data)
+            data = json.dumps(struct[0])
+            serialized_data.append(data)
         return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
-
 
 # API for Tagging
 
