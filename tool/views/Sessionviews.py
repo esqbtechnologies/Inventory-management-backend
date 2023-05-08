@@ -242,7 +242,7 @@ class last_session_amt(APIView):
                 activesession = session.objects.get(isActive=True,location__lname = request.data['location'])
                 return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
-                if session.objects.filter(location__lname = request.data['location']).exist():
+                if session.objects.filter(location__lname = request.data['location']).exists():
                     data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
                     sess = data[0]
                     aset = verification.objects.filter(sessionId=sess.sessionId)
