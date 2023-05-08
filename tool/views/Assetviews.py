@@ -324,4 +324,20 @@ class update_asset(APIView):
             else:
                 return JsonResponse({'error':'The location given does not exists in the DB'},status = status.HTTP_404_NOT_FOUND)
         else:
-            return JsonResponse({'error':'The user is not authorized to update the asset'},status = status.HTTP_406_NOT_ACCEPTABLE)    
+            return JsonResponse({'error':'The user is not authorized to update the asset'},status = status.HTTP_406_NOT_ACCEPTABLE)
+        
+
+class cnt_untaged(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self,request):
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        aset = Asset.objects.filter(Warehouse_location = user.location).filter(Qr_id = "")
+        cnt = len(aset)
+        return JsonResponse({'Untagged':cnt},status=status.HTTP_200_OK)        
