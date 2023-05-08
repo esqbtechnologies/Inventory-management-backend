@@ -226,5 +226,38 @@ class last_session_data(APIView):
                 except:
                     return JsonResponse({'Result': 'No Session exists to Send data'}, status=status.HTTP_204_NO_CONTENT)
         return JsonResponse({'error': 'user is not authorized to Restart session'}, status=status.HTTP_400_BAD_REQUEST)
+ 
+class last_session_amt(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self,request):
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        if user.role == 'General_manager':
+            try:
+                activesession = session.objects.get(isActive=True,location__lname = request.data['location'])
+                return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+            except:
+                try:
+                    data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
+                    sess = data[0]
+                    aset = verification.objects.filter(sessionId=sess.sessionId)
+                    totalaset = len(aset)
+                    founaset = len(verification.objects.filter(sessionId = sess.sessionId).filter(flag = True))
+                    amt = 0
+                    notfnd = verification.objects.filter(sessionId = sess.sessionId).filter(flag = False)
+                    for datas in notfnd:
+                        if data.asset.amount != NULL:
+                            amt = amt + int(data.asset.amounnt)
+                    return JsonResponse({'TotalAsset':totalaset,'FoundAsset':founaset,'Amount':amt},status = status.HTTP_200_OK)        
+
+                except:
+                    return JsonResponse({'Result': 'No Session exists to Send data'}, status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({'error': 'user is not authorized to Restart session'}, status=status.HTTP_400_BAD_REQUEST)  
+
     
     
