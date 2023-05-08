@@ -181,9 +181,10 @@ class fullTextSearch(ListAPIView):
             data = serializers.serialize('json', [resul,])
             struct = json.loads(data)
             data = json.dumps(struct[0])
+            data = json.loads(data)
             data['fields']['location'] = resul.Warehouse_location.lname
-            serialized_data.append(data)
             data = json.dumps(data)
+            serialized_data.append(data)
         return JsonResponse(serialized_data, safe=False, status=status.HTTP_200_OK)
 
 # API for Tagging
