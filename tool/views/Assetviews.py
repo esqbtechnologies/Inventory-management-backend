@@ -17,6 +17,7 @@ from django.core import serializers
 from rest_framework import status
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from rest_framework.pagination import PageNumberPagination
+from django.db import IntegrityError, transaction
 
 # API To get asset from item_code
 
@@ -49,32 +50,33 @@ class asset_add(APIView):
     def post(self, request):
         arrOfassets = request.data
         added_sucesfully = []
-        coun = 1
-        for asset in arrOfassets:
-            if Asset.objects.filter(item_code=asset['itemCode']).exists():
-                continue
-            else:
-                if location.objects.filter(lname = asset['warehouseLocation']).exists():
-                    new_asset = Asset()
-                    new_asset.item_code = asset['itemCode']
-                    new_asset.item_name = asset['itemName']
-                    new_asset.asset_cls = asset['assetClass']
-                    new_asset.periodcat = asset['periodCat']
-                    new_asset.Useful_life = asset['usefulLife']
-                    new_asset.Remain_life = asset['remainLife']
-                    new_asset.amount = asset['amount']
-                    new_asset.Warehouse_location = location.objects.get(lname=asset['warehouseLocation'])
-                    new_asset.save()
-                    data = serializers.serialize('json', [new_asset,])
-                    struct = json.loads(data)
-                    data = json.dumps(struct[0])
-                    data = json.loads(data)
-                    data['fields']['location'] = asset['warehouseLocation']
-                    data = json.dumps(data)
-                    added_sucesfully.append(data)
-                    coun = coun + 1
-                else:
-                    return JsonResponse({'error':'The location given at line ' + str(coun) + ' does not exists in DB'},status = status.HTTP_406_NOT_ACCEPTABLE)    
+        coun = 1 
+        try:
+            with transaction.atomic():
+                for asset in arrOfassets:
+                    if Asset.objects.filter(item_code=asset['itemCode']).exists():
+                        continue
+                    else:
+                        new_asset = Asset()
+                        new_asset.item_code = asset['itemCode']
+                        new_asset.item_name = asset['itemName']
+                        new_asset.asset_cls = asset['assetClass']
+                        new_asset.periodcat = asset['periodCat']
+                        new_asset.Useful_life = asset['usefulLife']
+                        new_asset.Remain_life = asset['remainLife']
+                        new_asset.amount = asset['amount']
+                        new_asset.Warehouse_location = location.objects.get(lname=asset['warehouseLocation'])
+                        new_asset.save()
+                        data = serializers.serialize('json', [new_asset,])
+                        struct = json.loads(data)
+                        data = json.dumps(struct[0])
+                        data = json.loads(data)
+                        data['fields']['location'] = asset['warehouseLocation']
+                        data = json.dumps(data)
+                        added_sucesfully.append(data)
+                        coun = coun + 1
+        except IntegrityError:
+            return JsonResponse({'error':'The location given at line ' + str(coun) + ' does not exists in DB'},status = status.HTTP_406_NOT_ACCEPTABLE)    
         return JsonResponse(added_sucesfully, safe=False, status=status.HTTP_200_OK)
 
 # API to retrive all verifications for asset
