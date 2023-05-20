@@ -340,6 +340,6 @@ class cnt_untaged(APIView):
         payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
                              algorithms=['HS256'])
         user = User.objects.get(email=payload['email'])
-        aset = Asset.objects.filter(Warehouse_location = user.location).filter(Qr_id = "")
+        aset = Asset.objects.filter(Warehouse_location = user.location).filter(Qr_id__isnull = True)
         cnt = len(aset)
         return JsonResponse({'Untagged':cnt},status=status.HTTP_200_OK)        
