@@ -147,3 +147,25 @@ class add_comment(APIView):
                 return JsonResponse({'Respone':'Comment Added Succesfully'},status = status.HTTP_200_OK)
         return JsonResponse({'error': 'user is not authorized to get Data'}, status=status.HTTP_400_BAD_REQUEST)
 
+    
+class get_verification_byuser(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self,request):
+        verificationByUser = Verification.objects.filter(
+                sessionId=request.data['sessionId'], worker_id=request.data['worker_id'])
+        verifications = []
+        for data in verificationByUser:
+            code = data.asset.item_code
+            name = data.asset.item_name
+            dumm = serializers.serialize('json', [data,])
+            struct = json.loads(dumm)
+            dumm = json.dumps(struct[0])
+            dumm = json.loads(dumm)
+            dumm['fields']['item_code'] = code
+            dumm['fields']['item_name'] = name
+            dumm['fields']['locationofitem'] = data.asset.Warehouse_location.lname
+            verifications.append(dumm)
+        return JsonResponse(verifications, safe=False, status=status.HTTP_200_OK)
