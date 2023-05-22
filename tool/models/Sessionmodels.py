@@ -7,3 +7,4 @@ class session(models.Model):
     sessionEndDate = models.DateField(null=True)
     isActive = models.BooleanField()
     location = models.ForeignKey(location,blank = True,null = True,on_delete= models.SET_NULL)
+    is_latest = models.BooleanField(default = True)
