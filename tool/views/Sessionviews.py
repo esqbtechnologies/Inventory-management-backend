@@ -33,6 +33,8 @@ class create_session(APIView):
                 if session.objects.filter(isActive=True).filter(location__lname = request.data['location']).exists():
                     return JsonResponse({'Response':'An active session already exists for the location'})
                 id = uuid.uuid4()
+                if session.objects.filter(location__lname=request.data['location']).filter(is_latest=True).exists():
+                    session.objects.filter(location__lname=request.data['location'],is_latest = True).update(is_latest= False)
                 newsession = session()
                 newsession.isActive = True
                 newsession.sessionStartDate = date.today()
@@ -137,7 +139,7 @@ class restart_last_session(APIView):
                 return JsonResponse({'Result': 'There exits an already active session in this location'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
                 try:
-                    data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
+                    data = session.objects.filter(location__lname = request.data['location'],is_latest=True)
                     sess = data[0]
                     sess.isActive = True
                     sess.sessionEndDate = None
@@ -200,7 +202,7 @@ class last_session_data(APIView):
                 return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
                 try:
-                    data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
+                    data = session.objects.filter(location__lname = request.data['location'],is_latest=True)
                     sess = data[0]
                     response_data = []
                     page_size = 100
@@ -243,7 +245,7 @@ class last_session_amt(APIView):
                 return JsonResponse({'Result': 'There exits an already active session'}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
             except:
                 if session.objects.filter(location__lname = request.data['location']).exists():
-                    data = session.objects.filter(location__lname = request.data['location']).order_by('-sessionEndDate')
+                    data = session.objects.filter(location__lname = request.data['location'],is_latest=True)
                     sess = data[0]
                     aset = verification.objects.filter(sessionId=sess.sessionId)
                     totalaset = len(aset)
