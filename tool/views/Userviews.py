@@ -91,7 +91,7 @@ class register(APIView):
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
             if User.objects.filter(email = request.data['email']).exists():
-                return JsonResponse({'error':'User with this email already exists'})
+                return JsonResponse({'error':'User with this email already exists'},status = status.HTTP_400_BAD_REQUEST)
             email = request.data['email']
             password = request.data['password']
             role = "Worker"
