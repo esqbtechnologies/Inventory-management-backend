@@ -149,3 +149,18 @@ class change_password(APIView):
             return JsonResponse({'Response': 'Password changed succesfully'})
         except:
             return JsonResponse({'Response': 'No data found'})
+        
+        
+class checkUser(APIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self,request):
+        email = request.data['email']
+        password = request.data['password']
+        if User.objects.filter(email=email).exists():
+            user = authenticate(email=email, password=password)
+            if not user:
+                return Response({'error': 'Invalid Credentials'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({Message:'Success'},status = status.HTTP_200_OK)    
+        return Response({'error':'Email Does not exists'},status=status.HTTP_401_UNAUTHORIZED)                 
