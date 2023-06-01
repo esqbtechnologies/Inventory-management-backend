@@ -155,7 +155,7 @@ class checkUser(APIView):
     permission_classes = (AllowAny,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get(self,request):
+    def post(self,request):
         email = request.data['email']
         password = request.data['password']
         if User.objects.filter(email=email).exists():
