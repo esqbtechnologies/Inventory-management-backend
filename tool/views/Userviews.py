@@ -162,5 +162,5 @@ class checkUser(APIView):
             user = authenticate(email=email, password=password)
             if not user:
                 return Response({'error': 'Invalid Credentials'}, status=status.HTTP_404_NOT_FOUND)
-            return Response({Message:'Success'},status = status.HTTP_200_OK)    
+            return Response({'Message':'Success'},status = status.HTTP_200_OK)    
         return Response({'error':'Email Does not exists'},status=status.HTTP_401_UNAUTHORIZED)                 
