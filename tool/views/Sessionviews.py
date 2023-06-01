@@ -208,7 +208,8 @@ class last_session_data(APIView):
                     page_size = 100
                     paginator = PageNumberPagination()
                     paginator.page_size = page_size
-                    aset = verification.objects.filter(sessionId=sess.sessionId).order_by("item_code")
+                    aset = verification.objects.filter(sessionId=sess.sessionId)
+#                     aset = verification.objects.filter(sessionId=sess.sessionId).order_by("item_code")
                     sdata = paginator.paginate_queryset(aset,request)
                     for sdatas in sdata:
                         code = sdatas.asset.item_code
