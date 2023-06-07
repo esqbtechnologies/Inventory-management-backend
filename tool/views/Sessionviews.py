@@ -274,7 +274,7 @@ class get_all_active_session(APIView):
                              algorithms=['HS256'])
         user = User.objects.get(email=payload['email'])
         if user.role == 'General_manager':
-            all_session = session.objects.filter(is_active = True)
+            all_session = session.objects.filter(isActive = True)
             response_data = []
             for sessions in all_session:
                 data = serializers.serialize('json', [sessions,])
