@@ -285,4 +285,5 @@ class get_all_active_session(APIView):
                 # data['fields']['location_name'] = sessions.location__lname
                 data = json.dumps(data)
                 response_data.append(data)
+                return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
         return JsonResponse({'error': 'user is not authorized to get list of All Active sessions'}, status=status.HTTP_400_BAD_REQUEST)      
