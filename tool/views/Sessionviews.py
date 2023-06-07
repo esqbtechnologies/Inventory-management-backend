@@ -282,7 +282,7 @@ class get_all_active_session(APIView):
                 data = json.dumps(struct[0])
                 data = json.loads(data)
                 print(sessions.location)
-                data['fields']['location_name'] = sessions.location
+                data['fields']['location_name'] = sessions.location.lname
                 data = json.dumps(data)
                 response_data.append(data)
             return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
