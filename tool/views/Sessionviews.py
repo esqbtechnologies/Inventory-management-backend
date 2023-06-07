@@ -281,7 +281,7 @@ class get_all_active_session(APIView):
                 struct = json.loads(data)
                 data = json.dumps(struct[0])
                 data = json.loads(data)
-                print(session.location__lname)
+                print(sessions.location__lname)
                 # data['fields']['location_name'] = sessions.location__lname
                 data = json.dumps(data)
                 response_data.append(data)
