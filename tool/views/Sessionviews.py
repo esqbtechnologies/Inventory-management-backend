@@ -263,5 +263,26 @@ class last_session_amt(APIView):
         return JsonResponse({'error': 'user is not authorized to Restart session'}, status=status.HTTP_400_BAD_REQUEST)  
  
 
-    
-    
+class get_all_active_session(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self,request):
+        token = request.headers['Authorization']
+        token = token[4:]
+        payload = jwt.decode(jwt=token, key=set.SECRET_KEY,
+                             algorithms=['HS256'])
+        user = User.objects.get(email=payload['email'])
+        if user.role == 'General_manager':
+            all_session = session.objects.filter(is_active = True)
+            response_data = []
+            for sessions in all_session:
+                data = serializers.serialize('json', [sessions,])
+                struct = json.loads(data)
+                data = json.dumps(struct[0])
+                data = json.loads(data)
+                print(session.location__lname)
+                # data['fields']['location_name'] = sessions.location__lname
+                data = json.dumps(data)
+                response_data.append(data)
+        return JsonResponse({'error': 'user is not authorized to get list of All Active sessions'}, status=status.HTTP_400_BAD_REQUEST)      
