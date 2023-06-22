@@ -4,3 +4,4 @@ djangorestframework_jwt
 djangorestframework_simplejwt==5.2.2
 PyJWT==2.6.0
 requests==2.25.0
+openpyxl==3.1.2
