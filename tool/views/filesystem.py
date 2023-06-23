@@ -38,6 +38,6 @@ class generateFar(APIView):
         writer = pd.ExcelWriter('Output.xlsx',engine='xlsxwriter',datetime_format='YYYY-MM-DD HH:MM:SS')  
         df_excel.to_excel(writer,sheet_name= 'Input',header= False,index=False)
         df_excel2.to_excel(writer,sheet_name='FAR Report',header=False,index=False)
-        writer.save()
+        # writer.save()
         response = HttpResponse(content=writer, content_type='application/ms-excel')
         return response
