@@ -9,6 +9,7 @@ from .views import Verificationviews
 from .views import Sessionviews
 from .views import Otpviews
 from .views import Locationviews
+from .views import filesystem
 urlpatterns = [
     # End point to login (Type : POST,Header: Empty, Data: email,password)
     path('api/login/', csrf_exempt(Userviews.obtainToken.as_view()), name='login'),
@@ -67,5 +68,6 @@ urlpatterns = [
     path('api/untaggedcnt/',csrf_exempt(Assetviews.cnt_untaged.as_view()),name = 'UntaggedCount'),
     path('api/getverificationByuser/',csrf_exempt(Verificationviews.get_verification_byuser.as_view()),name='VerificationByuser'),
     path('api/checkuser/',csrf_exempt(Userviews.checkUser.as_view()),name = 'userChecker'),
-    path('api/getallActivesession',csrf_exempt(Sessionviews.get_all_active_session.as_view()),name= 'all_active_session')
+    path('api/getallActivesession',csrf_exempt(Sessionviews.get_all_active_session.as_view()),name= 'all_active_session'),
+    path('api/Fargenerate/',csrf_exempt(filesystem.generateFar.as_view()),name= 'Fargenerator')
 ]
